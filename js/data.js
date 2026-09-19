@@ -292,8 +292,6 @@ const competencesData = [
     number: "01",
     levelAchieved: "Niveau 3/3 atteint",
     levelDesc: "Conseiller pour l'amélioration des processus de l'organisation",
-    gradient: "linear-gradient(145deg, #C0392B 0%, #EC7063 100%)",
-    accent: "#EC7063",
     niveaux: [
       {
         num: 1,
@@ -339,8 +337,6 @@ const competencesData = [
     number: "02",
     levelAchieved: "Niveau 3/3 atteint",
     levelDesc: "Concourir à la prise de décision",
-    gradient: "linear-gradient(145deg, #D35400 0%, #F0883A 100%)",
-    accent: "#F0883A",
     niveaux: [
       {
         num: 1,
@@ -394,8 +390,6 @@ const competencesData = [
     number: "03",
     levelAchieved: "Niveau 3/3 atteint",
     levelDesc: "Améliorer les relations entre les parties prenantes",
-    gradient: "linear-gradient(145deg, #C8970A 0%, #F5C518 100%)",
-    accent: "#F5C518",
     niveaux: [
       {
         num: 1,
@@ -445,8 +439,6 @@ const competencesData = [
     number: "04",
     levelAchieved: "Niveau 2/2 atteint",
     levelDesc: "Sécuriser la proposition de valeur",
-    gradient: "linear-gradient(145deg, #1A7A40 0%, #3DBD70 100%)",
-    accent: "#3DBD70",
     niveaux: [
       {
         num: 1,
@@ -486,8 +478,6 @@ const competencesData = [
     number: "05",
     levelAchieved: "Niveau 2/2 atteint",
     levelDesc: "Optimiser la chaîne de valeur",
-    gradient: "linear-gradient(145deg, #1E3A8A 0%, #4469C9 100%)",
-    accent: "#4469C9",
     niveaux: [
       {
         num: 1,

@@ -7,55 +7,30 @@
   <title>Bons plans régionaux — Timothé Flipo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,700;1,700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=119">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg?v=200" type="image/svg+xml">
+  <link rel="canonical" href="https://timotheflipo.github.io/portfolio-v2/bons-plans.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Timothé Flipo — Portfolio">
+  <meta property="og:title" content="Bons plans régionaux — Timothé Flipo">
+  <meta property="og:description" content="Bons plans régionaux : de la donnée brute à la décision — Projet de Timothé Flipo chez Roole.">
+  <meta property="og:url" content="https://timotheflipo.github.io/portfolio-v2/bons-plans.html">
+  <meta property="og:image" content="https://timotheflipo.github.io/portfolio-v2/images/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f2f1ec">
+  <!-- Sans JavaScript, les blocs animés à l'apparition doivent rester lisibles :
+       la classe est posée avant le premier rendu, et c'est elle qui autorise le masquage. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="css/style.css?v=200">
   <style>
-
-    /* ---- Hero ---- */
-    .proj-hero {
-      padding: calc(var(--header-h) + 5rem) 2rem 4rem;
-      background-color: var(--bg);
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-    }
-    .proj-hero-inner { max-width: 860px; margin: 0 auto; }
-    .proj-breadcrumb {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.7rem; color: var(--light-gray);
-      margin-bottom: 1.75rem; text-transform: uppercase;
-      letter-spacing: 0.1em; font-weight: 600;
-    }
-    .proj-breadcrumb a { color: var(--light-gray); transition: color .2s; }
-    .proj-breadcrumb a:hover { color: var(--accent); }
-    .proj-breadcrumb-sep { opacity: 0.4; }
-    .proj-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 0.7rem; text-transform: uppercase;
-      letter-spacing: 0.18em; color: var(--accent); font-weight: 700; margin-bottom: 1rem;
-    }
-    .proj-eyebrow::before {
-      content: ''; display: block; width: 18px; height: 1.5px;
-      background-color: var(--accent); opacity: 0.6;
-    }
-    .proj-title {
-      font-family: 'Montserrat', sans-serif; font-weight: 800;
-      font-size: clamp(1.6rem, 3.5vw, 2.7rem); line-height: 1.2;
-      color: var(--dark); margin-bottom: 1rem;
-    }
-    .proj-subtitle {
-      font-size: 0.92rem; color: var(--gray); line-height: 1.75;
-      max-width: 600px; margin-bottom: 1.75rem;
-    }
-    .proj-tags-hero { display: flex; flex-wrap: wrap; gap: 8px; }
-    .proj-tag-hero {
-      padding: 5px 14px; border-radius: 50px; font-size: 0.68rem;
-      font-weight: 700; letter-spacing: 0.04em;
-      background-color: var(--accent-muted); color: var(--accent-dark);
-      border: 1px solid var(--accent-border);
-    }
-
+    /* Composants propres à cette page.
+       Tout ce qui est commun aux huit pages projet vit dans css/style.css. */
     /* ---- Pipeline (dark strip) ---- */
     .pipeline {
-      background-color: var(--dark);
+      background-color: var(--ink);
       padding: 3rem 2rem;
       overflow-x: auto;
     }
@@ -69,104 +44,75 @@
     .pipe-num {
       display: inline-flex; align-items: center; justify-content: center;
       width: 36px; height: 36px; border-radius: 50%;
-      background-color: var(--accent); color: var(--white);
-      font-size: 0.8rem; font-weight: 800; margin: 0 auto 10px;
+      background-color: var(--ink); color: var(--white);
+      font-size: var(--text-body); font-weight: 800; margin: 0 auto 10px;
     }
     .pipe-step h4 {
-      font-size: 0.78rem; font-weight: 700; color: var(--white);
+      font-size: var(--text-body-sm); font-weight: 700; color: var(--white);
       margin-bottom: 4px; line-height: 1.3;
     }
     .pipe-step p {
-      font-size: 0.68rem; color: rgba(255,255,255,0.38); line-height: 1.5;
+      font-size: var(--text-caption); color: rgba(255,255,255,0.38); line-height: 1.5;
     }
     .pipe-arrow {
-      color: var(--accent); font-size: 1.1rem; opacity: 0.6;
+      color: var(--stone); font-size: var(--text-subheading); opacity: 0.6;
       padding: 0 0.75rem; flex-shrink: 0;
       text-align: center;
     }
 
-    /* ---- Contenu ---- */
-    .proj-content { padding: 5rem 2rem 8rem; }
-    .proj-content-inner {
-      max-width: 860px; margin: 0 auto;
-      display: flex; flex-direction: column; gap: 5rem;
-    }
-
-    .section-label {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 0.62rem; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--accent);
-      font-weight: 700; margin-bottom: 0.6rem;
-    }
-    .section-label::after {
-      content: ''; width: 32px; height: 1px;
-      background-color: var(--accent); opacity: 0.35;
-    }
-    .section-title {
-      font-family: 'Montserrat', sans-serif; font-weight: 700;
-      font-size: 1.2rem; color: var(--dark); margin-bottom: 1.5rem; line-height: 1.3;
-    }
-
     /* ---- Avant / Après ---- */
     .transform {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start;
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); align-items: start;
     }
     .transform-col { }
     .transform-col-label {
-      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      font-size: var(--text-caption); font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.12em; margin-bottom: 0.75rem;
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: var(--gap-sm);
     }
-    .transform-col-label.before { color: var(--light-gray); }
+    .transform-col-label.before { color: var(--ash); }
     .transform-col-label.before::before {
       content: ''; display: block; width: 8px; height: 8px; border-radius: 50%;
-      background-color: var(--light-gray);
+      background-color: var(--ash);
     }
-    .transform-col-label.after { color: var(--accent); }
+    .transform-col-label.after { color: var(--ink); }
     .transform-col-label.after::before {
       content: ''; display: block; width: 8px; height: 8px; border-radius: 50%;
-      background-color: var(--accent);
+      background-color: var(--ink);
     }
     .transform-item {
-      display: flex; gap: 0.75rem; align-items: flex-start;
-      padding: 0.9rem 1rem; border-radius: var(--r-md);
-      border: 1px solid var(--card-border);
+      display: flex; gap: var(--gap-sm); align-items: flex-start;
+      padding: 0.9rem 1rem; border-radius: var(--radius);
+      border: 1px solid var(--rule-soft);
       background-color: var(--white);
-      font-size: 0.8rem; color: var(--gray); line-height: 1.6;
-      margin-bottom: 0.6rem; transition: box-shadow .2s;
+      font-size: var(--text-body); color: var(--stone); line-height: 1.6;
+      margin-bottom: 0.6rem; transition: box-shadow .var(--dur-panel) var(--ease-out);
     }
     .transform-item:last-child { margin-bottom: 0; }
-    .transform-item:hover { box-shadow: var(--shadow-sm); }
+    
     .transform-item.after {
-      border-color: var(--accent-border);
-      background-color: var(--accent-muted);
+      border-color: var(--rule-soft);
+      background-color: var(--paper);
     }
     .transform-item strong {
       display: block; margin-bottom: 2px; font-weight: 700;
-      font-size: 0.82rem;
+      font-size: var(--text-body);
     }
-    .transform-item.after strong { color: var(--accent-dark); }
-    .t-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+    .transform-item.after strong { color: var(--ink); }
 
     /* ---- Composants du dashboard ---- */
     .dash-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap);
     }
     .dash-card {
-      background-color: var(--white); border-radius: var(--r-lg);
-      padding: 1.4rem 1.5rem; border: 1px solid var(--card-border);
-      display: flex; gap: 1.1rem; align-items: flex-start;
-      transition: box-shadow .25s ease, transform .25s ease;
+      background-color: var(--white); border-radius: var(--radius-card);
+      padding: 1.4rem 1.5rem; border: 1px solid var(--rule-soft);
+      display: flex; gap: var(--gap); align-items: flex-start;
+      transition: box-shadow .var(--dur-panel) var(--ease-out), transform .var(--dur-panel) var(--ease-out);
     }
-    .dash-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
-    .dash-card-icon {
-      width: 40px; height: 40px; min-width: 40px; border-radius: var(--r-md);
-      background-color: var(--accent-muted); border: 1px solid var(--accent-border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; flex-shrink: 0;
-    }
-    .dash-card h4 { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin-bottom: 5px; }
-    .dash-card p { font-size: 0.78rem; color: var(--gray); line-height: 1.62; }
+    
+    .dash-card h4 { font-size: var(--text-body); font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .dash-card p { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.62; }
 
     /* ---- Matrice 2×2 ---- */
     .matrix-section { }
@@ -174,139 +120,121 @@
       display: flex; flex-direction: column; gap: 0; align-items: stretch;
     }
     .matrix-top-label {
-      text-align: center; font-size: 0.65rem; font-weight: 700;
+      text-align: center; font-size: var(--text-caption); font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.14em;
-      color: var(--light-gray); margin-bottom: 6px;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      color: var(--ash); margin-bottom: 6px;
+      display: flex; align-items: center; justify-content: center; gap: var(--gap-xs);
     }
     .matrix-top-label::before,
     .matrix-top-label::after {
-      content: ''; flex: 1; height: 1px; background-color: var(--muted); max-width: 60px;
+      content: ''; flex: 1; height: 1px; background-color: var(--rule-soft); max-width: 60px;
     }
     .matrix-body { display: flex; gap: 0; align-items: stretch; }
     .matrix-y-label {
       writing-mode: vertical-rl; transform: rotate(180deg);
-      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.14em; color: var(--light-gray);
+      font-size: var(--text-caption); font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.14em; color: var(--ash);
       display: flex; align-items: center; justify-content: center;
       padding-right: 12px; gap: 0; white-space: nowrap;
     }
     .matrix-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr; flex: 1;
-      border-radius: var(--r-xl); overflow: hidden;
-      box-shadow: var(--shadow-md); gap: 2px;
-      background-color: var(--muted);
+      border-radius: var(--radius-card); overflow: hidden;
+      box-shadow: var(--shadow); gap: var(--gap-xs);
+      background-color: var(--rule-soft);
     }
     .quadrant {
       padding: 1.75rem; position: relative;
-      transition: opacity .25s ease;
+      transition: opacity .var(--dur-panel) var(--ease-out);
     }
-    .quadrant:hover { opacity: 0.92; }
+    
     .q-badge {
-      display: inline-block; font-size: 0.58rem; font-weight: 700;
+      display: inline-block; font-size: var(--text-caption); font-weight: 700;
       letter-spacing: 0.14em; text-transform: uppercase;
-      padding: 2px 9px; border-radius: 50px; margin-bottom: 10px;
+      padding: 2px 9px; border-radius: var(--radius-pill); margin-bottom: 10px;
     }
-    .quadrant h4 { font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; line-height: 1.2; }
-    .quadrant p { font-size: 0.75rem; line-height: 1.6; }
+    .quadrant h4 { font-size: var(--text-prose); font-weight: 800; margin-bottom: 6px; line-height: 1.2; }
+    .quadrant p { font-size: var(--text-body-sm); line-height: 1.6; }
 
     /* Maintenir — dark */
-    .q-maintenir { background-color: var(--dark); }
+    .q-maintenir { background-color: var(--ink); }
     .q-maintenir .q-badge { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
     .q-maintenir h4 { color: var(--white); }
     .q-maintenir p { color: rgba(255,255,255,0.5); }
 
     /* Pousser — orange */
-    .q-pousser { background-color: var(--accent); }
+    .q-pousser { background-color: var(--ink); }
     .q-pousser .q-badge { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); }
     .q-pousser h4 { color: var(--white); }
     .q-pousser p { color: rgba(255,255,255,0.72); }
 
     /* Optimiser — blanc avec accent */
     .q-optimiser { background-color: var(--white); }
-    .q-optimiser .q-badge { background: var(--accent-muted); color: var(--accent-dark); border: 1px solid var(--accent-border); }
-    .q-optimiser h4 { color: var(--dark); }
-    .q-optimiser p { color: var(--gray); }
+    .q-optimiser .q-badge { background: var(--paper); color: var(--ink); border: 1px solid var(--rule-soft); }
+    .q-optimiser h4 { color: var(--ink); }
+    .q-optimiser p { color: var(--stone); }
 
     /* Surveiller — bg clair */
-    .q-surveiller { background-color: var(--bg); }
-    .q-surveiller .q-badge { background: rgba(0,0,0,0.05); color: var(--light-gray); }
-    .q-surveiller h4 { color: var(--dark); }
-    .q-surveiller p { color: var(--gray); }
+    .q-surveiller { background-color: var(--paper); }
+    .q-surveiller .q-badge { background: rgba(0,0,0,0.05); color: var(--ash); }
+    .q-surveiller h4 { color: var(--ink); }
+    .q-surveiller p { color: var(--stone); }
 
     .matrix-x-label {
-      text-align: right; font-size: 0.65rem; font-weight: 700;
+      text-align: right; font-size: var(--text-caption); font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.14em;
-      color: var(--light-gray); margin-top: 6px; padding-left: 40px;
-      display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+      color: var(--ash); margin-top: 6px; padding-left: 40px;
+      display: flex; align-items: center; justify-content: flex-end; gap: var(--gap-xs);
     }
-    .matrix-x-label::before { content: ''; flex: 1; height: 1px; background-color: var(--muted); max-width: 60px; }
+    .matrix-x-label::before { content: ''; flex: 1; height: 1px; background-color: var(--rule-soft); max-width: 60px; }
 
     /* ---- Évolution (pilotage) ---- */
     .evolution-card {
-      background-color: var(--white); border-radius: var(--r-xl);
-      padding: 2.5rem; border: 1px solid var(--card-border);
-      display: grid; grid-template-columns: auto 1fr; gap: 2rem;
-      align-items: center; box-shadow: var(--shadow-sm);
+      background-color: var(--white); border-radius: var(--radius-card);
+      padding: 2.5rem; border: 1px solid var(--rule-soft);
+      display: grid; grid-template-columns: auto 1fr; gap: var(--gap-md);
+      align-items: center; box-shadow: var(--shadow);
     }
     .evolution-before-after {
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      display: flex; flex-direction: column; align-items: center; gap: var(--gap-sm);
       flex-shrink: 0;
     }
     .evo-pill {
-      padding: 8px 16px; border-radius: 50px; font-size: 0.72rem; font-weight: 700;
+      padding: 8px 16px; border-radius: var(--radius-pill); font-size: var(--text-body-sm); font-weight: 700;
       text-align: center; white-space: nowrap;
     }
     .evo-pill.before {
-      background-color: rgba(0,0,0,0.05); color: var(--gray);
+      background-color: rgba(0,0,0,0.05); color: var(--stone);
       border: 1px solid rgba(0,0,0,0.08);
     }
     .evo-pill.after {
-      background-color: var(--accent); color: var(--white);
+      background-color: var(--ink); color: var(--white);
     }
-    .evo-arrow { font-size: 1.2rem; color: var(--accent); }
+    .evo-arrow { font-size: var(--text-subheading); color: var(--stone); }
     .evolution-text h4 {
-      font-family: 'Montserrat', sans-serif; font-weight: 700;
-      font-size: 1rem; color: var(--dark); margin-bottom: 0.6rem;
+      font-family: var(--font-display); font-weight: 700;
+      font-size: var(--text-prose); color: var(--ink); margin-bottom: 0.6rem;
     }
     .evolution-text p {
-      font-size: 0.84rem; color: var(--gray); line-height: 1.78;
+      font-size: var(--text-body); color: var(--stone); line-height: 1.78;
     }
-
-    /* ---- Skills light ---- */
-    .skills-light { padding-top: 3rem; border-top: 1px solid rgba(0,0,0,0.07); }
-    .skills-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
-    .skill-light-card {
-      background-color: var(--white); border-radius: var(--r-md);
-      padding: 1.25rem; border: 1px solid var(--card-border);
-      transition: box-shadow .25s, border-color .25s;
-    }
-    .skill-light-card:hover { box-shadow: var(--shadow-sm); border-color: var(--accent-border); }
-    .skill-light-name {
-      font-size: 0.78rem; font-weight: 800; color: var(--accent);
-      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px;
-    }
-    .skill-light-desc { font-size: 0.78rem; color: var(--gray); line-height: 1.65; }
-
-    /* ---- Back ---- */
-    .proj-back {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 0.82rem; font-weight: 600; color: var(--gray);
-      text-decoration: none; transition: color .2s;
-    }
-    .proj-back:hover { color: var(--accent); }
 
     /* ---- Responsive ---- */
     @media (max-width: 700px) {
-      .pipeline-inner { grid-template-columns: 1fr; gap: 1.5rem; }
+      .pipeline-inner { grid-template-columns: 1fr; gap: var(--gap); }
       .pipe-arrow { display: none; }
       .transform { grid-template-columns: 1fr; }
       .dash-grid { grid-template-columns: 1fr; }
       .matrix-y-label { display: none; }
-      .evolution-card { grid-template-columns: 1fr; gap: 1.5rem; }
-      .evolution-before-after { flex-direction: row; }
-      .skills-row { grid-template-columns: 1fr; }
+      .evolution-card { grid-template-columns: 1fr; gap: var(--gap); }
+      .evolution-before-after { flex-direction: row; }}
+
+    /* Survol : réservé à la souris, sinon l'état reste collé au tap. */
+    @media (hover: hover) and (pointer: fine) {
+      .transform-item:hover { border-color: var(--rule); }
+      .dash-card:hover { border-color: var(--rule); transform: translateY(-2px); }
+      .quadrant:hover { opacity: 0.92; }
     }
   </style>
 </head>
@@ -374,30 +302,24 @@
           <div class="transform-col">
             <div class="transform-col-label before">Avant</div>
             <div class="transform-item">
-              <span class="t-icon">—</span>
               <div><strong>Vision générale uniquement</strong>Impossible de comparer rapidement les performances par zone, période ou type d'offre.</div>
             </div>
             <div class="transform-item">
-              <span class="t-icon">—</span>
               <div><strong>Informations dispersées</strong>Les données existaient mais n'étaient pas regroupées dans une logique exploitable.</div>
             </div>
             <div class="transform-item">
-              <span class="t-icon">—</span>
               <div><strong>Logique de consultation</strong>Pas de suivi continu ni de vue d'ensemble permettant d'orienter les priorités.</div>
             </div>
           </div>
           <div class="transform-col">
             <div class="transform-col-label after">Après structuration</div>
             <div class="transform-item after">
-              <span class="t-icon">✓</span>
               <div><strong>Base de données commune</strong>Toutes les informations regroupées dans un format permettant les croisements et filtres.</div>
             </div>
             <div class="transform-item after">
-              <span class="t-icon">✓</span>
               <div><strong>Données comparables</strong>Croisement par période, zone géographique et type de bon plan en quelques clics.</div>
             </div>
             <div class="transform-item after">
-              <span class="t-icon">✓</span>
               <div><strong>Logique de pilotage</strong>Mise à jour régulière pour un suivi continu et des décisions fondées sur les données réelles.</div>
             </div>
           </div>
@@ -410,28 +332,24 @@
         <h2 class="section-title">Quatre dimensions de lecture de la performance</h2>
         <div class="dash-grid">
           <div class="dash-card">
-            <div class="dash-card-icon">📈</div>
             <div>
               <h4>Évolution mensuelle du volume</h4>
               <p>Suivi graphique des tendances dans le temps pour repérer les variations et les saisonnalités.</p>
             </div>
           </div>
           <div class="dash-card">
-            <div class="dash-card-icon">📱</div>
             <div>
               <h4>Répartition web vs application</h4>
               <p>Vue de la distribution des accès par canal pour identifier les préférences d'usage.</p>
             </div>
           </div>
           <div class="dash-card">
-            <div class="dash-card-icon">🏆</div>
             <div>
               <h4>Top des bons plans</h4>
               <p>Classement des offres les plus performantes pour valoriser ce qui fonctionne.</p>
             </div>
           </div>
           <div class="dash-card">
-            <div class="dash-card-icon">⚠️</div>
             <div>
               <h4>Offres peu actives</h4>
               <p>Identification rapide des bons plans qui génèrent peu d'activité et nécessitent une action.</p>
@@ -509,13 +427,16 @@
         </div>
       </div>
 
-      <!-- Retour -->
-      <!-- Preuves associées (injecté par buildPreuvesSection dans main.js) -->
-      <div id="preuves-mount" data-slug="bons-plans" class="preuve-section reveal"></div>
-
-      <a href="index.html#proj-bons-plans" class="proj-back">← Retour au portfolio</a>
-
     </div>
+  </div>
+
+  <!-- Preuves associées — sorties du flux de la colonne, en pleine largeur.
+       Le V1 les enfermait derrière une modale : 46 Mo de matière réelle que
+       personne n'ouvrait. -->
+  <section class="preuves" id="preuves" data-slug="bons-plans"></section>
+
+  <div class="proj-outro">
+    <a href="index.html#proj-bons-plans" class="proj-back">← Retour au portfolio</a>
   </div>
 
   <!-- FOOTER -->
@@ -544,12 +465,15 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA</span>
+      <span class="footer-copy">
+        © 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA
+        <a class="footer-legal" href="mentions-legales.html">Mentions légales &amp; données personnelles</a>
+      </span>
       <button type="button" class="footer-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Haut de page ↑</button>
     </div>
   </footer>
 
-  <script src="js/data.js?v=119"></script>
-  <script src="js/main.js?v=119"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/main.js?v=200"></script>
 </body>
 </html>

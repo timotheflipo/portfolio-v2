@@ -7,8 +7,24 @@
   <title>Contact — Timothé Flipo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=119">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg?v=200" type="image/svg+xml">
+  <link rel="canonical" href="https://timotheflipo.github.io/portfolio-v2/contact.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Timothé Flipo — Portfolio">
+  <meta property="og:title" content="Contact — Timothé Flipo">
+  <meta property="og:description" content="Contacter Timothé Flipo — mail, téléphone, LinkedIn.">
+  <meta property="og:url" content="https://timotheflipo.github.io/portfolio-v2/contact.html">
+  <meta property="og:image" content="https://timotheflipo.github.io/portfolio-v2/images/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f2f1ec">
+  <!-- Sans JavaScript, les blocs animés à l'apparition doivent rester lisibles :
+       la classe est posée avant le premier rendu, et c'est elle qui autorise le masquage. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="css/style.css?v=200">
 </head>
 <body>
 
@@ -36,7 +52,6 @@
 
           <div class="contact-items">
             <a class="contact-item" href="mailto:timothe.flipo6@gmail.com">
-              <div class="contact-icon">✉</div>
               <div>
                 <span class="contact-label">Email</span>
                 <span class="contact-val">timothe.flipo6@gmail.com</span>
@@ -44,7 +59,6 @@
             </a>
 
             <a class="contact-item" href="tel:+33769175643">
-              <div class="contact-icon">📞</div>
               <div>
                 <span class="contact-label">Téléphone</span>
                 <span class="contact-val">07 69 17 56 43</span>
@@ -54,7 +68,6 @@
             <a class="contact-item"
                href="https://www.linkedin.com/in/timoth%C3%A9-flipo-675099336"
                target="_blank" rel="noopener">
-              <div class="contact-icon">in</div>
               <div>
                 <span class="contact-label">LinkedIn</span>
                 <span class="contact-val">Timothé Flipo</span>
@@ -62,7 +75,6 @@
             </a>
 
             <div class="contact-item" style="cursor: default;">
-              <div class="contact-icon">📍</div>
               <div>
                 <span class="contact-label">Localisation</span>
                 <span class="contact-val">Suresnes, 92150</span>
@@ -76,11 +88,7 @@
           <h3 class="form-heading">Envoyez-moi un message</h3>
           <p class="form-sub">Je vous répondrai par email dans les meilleurs délais.</p>
 
-          <!--
-            FORMULAIRE — Connecté à Web3Forms (envoi vers timothe.flipo6@gmail.com).
-            ⚠️ Remplacer la valeur access_key ci-dessous par la clé reçue sur web3forms.com.
-            L'envoi est géré sans rechargement par initContactForm() dans js/main.js.
-          -->
+          <!-- Envoi sans rechargement via Web3Forms — voir initContactForm() dans js/main.js. -->
           <form id="contact-form">
             <input type="hidden" name="access_key" value="5fb1afc9-3785-4180-9e1e-0673cbe2ccaa">
             <input type="hidden" name="subject" value="Nouveau message depuis le portfolio">
@@ -107,6 +115,11 @@
               Envoyer le message →
             </button>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+            <!-- Le formulaire collecte un nom, un e-mail et un message : le dire ici est une obligation. -->
+            <p class="form-legal">
+              Les informations envoyées — nom, e-mail et message — servent uniquement à vous répondre.
+              Voir les <a href="mentions-legales.html">mentions légales</a>.
+            </p>
           </form>
         </div>
 
@@ -140,12 +153,15 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA</span>
+      <span class="footer-copy">
+        © 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA
+        <a class="footer-legal" href="mentions-legales.html">Mentions légales &amp; données personnelles</a>
+      </span>
       <button type="button" class="footer-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Haut de page ↑</button>
     </div>
   </footer>
 
-  <script src="js/data.js?v=119"></script>
-  <script src="js/main.js?v=119"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/main.js?v=200"></script>
 </body>
 </html>

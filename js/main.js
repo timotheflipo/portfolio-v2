@@ -3,19 +3,33 @@
 // ============================================
 function buildNav() {
   const path = window.location.pathname;
-  const isIndex = path.endsWith('index.html') || path.endsWith('/') || path === '' || path.endsWith('/Claude/');
+  const isIndex = path.endsWith('index.html') || path.endsWith('/') || path === '';
 
-  const prefix = isIndex ? '' : '';
+  const links = [
+    { label: 'Accueil',     href: 'index.html' },
+    { label: 'À propos',    href: 'about.html' },
+    { label: 'Parcours',    href: 'parcours.html' },
+    { label: 'Compétences', href: 'competences.html' },
+    { label: 'Contact',     href: 'contact.html' }
+  ];
+  const currentPage = path.split('/').pop() || 'index.html';
+  const isCurrent = l => currentPage === l.href || (isIndex && l.href === 'index.html');
 
+  // Sur grand écran les cinq liens sont visibles : le V1 les cachait
+  // tous derrière un bouton « Menu », y compris quand la place ne
+  // manquait pas. Le panneau latéral reste, mais pour le mobile.
   const header = document.createElement('header');
   header.className = 'site-header';
   header.id = 'site-header';
   header.innerHTML = `
     <a class="logo" href="${isIndex ? '#hero' : 'index.html'}">
-      <div class="logo-mark">TF</div>
+      <span class="logo-mark">TF</span>
       <span class="logo-name">Timothé Flipo</span>
     </a>
-    <button class="burger-btn" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">
+    <nav class="nav-inline" aria-label="Navigation principale">
+      ${links.map(l => `<a href="${l.href}"${isCurrent(l) ? ' aria-current="page"' : ''}>${l.label}</a>`).join('')}
+    </nav>
+    <button class="burger-btn" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-panel">
       <span class="burger-label">Menu</span>
       <span class="burger-box">
         <span class="burger-line"></span>
@@ -32,50 +46,31 @@ function buildNav() {
   const panel = document.createElement('nav');
   panel.className = 'nav-panel';
   panel.id = 'nav-panel';
-  panel.setAttribute('aria-label', 'Navigation principale');
+  panel.setAttribute('aria-label', 'Navigation');
 
-  // Icônes outline minimalistes (style Lucide)
-  const icons = {
-    index: '<svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>',
-    about: '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-    parcours: '<svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>',
-    competences: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>',
-    contact: '<svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>'
-  };
-
-  const links = [
-    { label: 'Accueil', href: 'index.html', key: 'index' },
-    { label: 'À propos', href: 'about.html', key: 'about' },
-    { label: 'Parcours', href: 'parcours.html', key: 'parcours' },
-    { label: 'Compétences', href: 'competences.html', key: 'competences' },
-    { label: 'Contact', href: 'contact.html', key: 'contact' }
-  ];
-
-  const currentPage = path.split('/').pop() || 'index.html';
-
+  // Les icônes de contour du V1 étaient, de l'aveu même du commentaire
+  // qu'elles portaient, du « style Lucide » : cinq pictogrammes
+  // génériques pour cinq mots parfaitement lisibles.
   panel.innerHTML = `
     <div class="nav-head">
-      <div class="nav-head-mark">TF</div>
+      <span class="nav-head-mark">TF</span>
       <div class="nav-head-info">
         <span class="nav-head-name">Timothé Flipo</span>
         <span class="nav-head-mail">Portfolio · BUT GEA</span>
       </div>
     </div>
-    <div class="nav-section-label">Navigation</div>
+    <span class="nav-section-label">Navigation</span>
     <ul class="nav-links">
       ${links.map(l => `
         <li>
-          <a class="nav-link ${currentPage === l.href || (currentPage === '' && l.key === 'index') ? 'active' : ''}"
-             href="${l.href}">
-            <span class="nav-ico">${icons[l.key]}</span>
-            <span class="nav-text">${l.label}</span>
+          <a class="nav-link${isCurrent(l) ? ' active' : ''}" href="${l.href}"${isCurrent(l) ? ' aria-current="page"' : ''}>
+            ${l.label}
           </a>
-        </li>
-      `).join('')}
+        </li>`).join('')}
     </ul>
     <div class="nav-bottom">
       <div>Timothé Flipo — Portfolio 2025–2026</div>
-      <div style="margin-top:6px">BUT GEA · Parcours GEMA · Paris-Saclay</div>
+      <div>BUT GEA · Parcours GEMA · Paris-Saclay</div>
     </div>
   `;
 
@@ -83,7 +78,6 @@ function buildNav() {
   document.body.prepend(overlay);
   document.body.prepend(header);
 
-  // Burger toggle
   const burger = document.getElementById('burger');
   const navPanel = document.getElementById('nav-panel');
   const navOverlay = document.getElementById('nav-overlay');
@@ -95,7 +89,6 @@ function buildNav() {
     burger.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
   }
-
   function closeNav() {
     burger.classList.remove('open');
     navPanel.classList.remove('open');
@@ -107,14 +100,9 @@ function buildNav() {
   burger.addEventListener('click', () => {
     burger.classList.contains('open') ? closeNav() : openNav();
   });
-
   navOverlay.addEventListener('click', closeNav);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeNav();
-  });
-
-  // Scroll → header background
   const siteHeader = document.getElementById('site-header');
   window.addEventListener('scroll', () => {
     siteHeader.classList.toggle('scrolled', window.scrollY > 40);
@@ -200,11 +188,10 @@ function buildS1HTML(theme, num, cards) {
     <div class="ts1-header reveal">
       <div class="ts1-header-left">
         <div class="ts-eyebrow">${num}</div>
-        <h2 class="ts-title" style="font-size:clamp(1.4rem,2.5vw,2.1rem);margin-bottom:.75rem">${theme.title}</h2>
+        <h2 class="ts-title">${theme.title}</h2>
         <p class="ts-intro">${theme.intro || ''}</p>
       </div>
       <div class="ts1-header-right">
-        <span class="ts1-num">${num}</span>
         <div class="ts-tags">${headerTagsHTML}</div>
       </div>
     </div>
@@ -235,10 +222,9 @@ function buildS2HTML(theme, num, cards) {
   return `
     <div class="ts2-inner">
       <div class="ts2-sidebar reveal-l">
-        <span class="ts2-num">${num}</span>
         <div class="ts-eyebrow">Compétences</div>
-        <h2 class="ts-title" style="font-size:clamp(1.2rem,1.8vw,1.55rem);margin-bottom:.75rem">${theme.title}</h2>
-        <p class="ts-intro" style="margin-bottom:1.25rem">${theme.intro || ''}</p>
+        <h2 class="ts-title">${theme.title}</h2>
+        <p class="ts-intro">${theme.intro || ''}</p>
         <div class="ts-tags">${sideTagsHTML}</div>
       </div>
       <div class="ts2-cards reveal-r">${cardsHTML}</div>
@@ -261,8 +247,8 @@ function buildS3HTML(theme, num, cards) {
         <div class="pcf-overlay"></div>
         <div class="pcf-img-body">
           <div class="pcf-awards">
-            <span class="pcf-award">🏆 Prix innovation</span>
-            <span class="pcf-award">🏆 Prix entrepreneurial</span>
+            <span class="pcf-award">Prix innovation</span>
+            <span class="pcf-award">Prix entrepreneurial</span>
           </div>
           <div class="pcf-badge">Projet central</div>
           <div class="pcf-top">
@@ -303,10 +289,9 @@ function buildS3HTML(theme, num, cards) {
 
   return `
     <div class="ts3-header reveal">
-      <span class="ts3-bg-num">${num}</span>
       <div class="ts-eyebrow">${num}</div>
-      <h2 class="ts-title" style="font-size:clamp(1.4rem,2.5vw,2.1rem);margin-bottom:.75rem">${theme.title}</h2>
-      <p class="ts-intro" style="margin-bottom:1.25rem">${theme.intro || ''}</p>
+      <h2 class="ts-title">${theme.title}</h2>
+      <p class="ts-intro">${theme.intro || ''}</p>
       <div class="ts-tags">${centerTagsHTML}</div>
     </div>
     <div class="ts3-grid">
@@ -355,13 +340,6 @@ function buildThematiques(container) {
   });
 
   container.addEventListener('click', e => {
-    const chip = e.target.closest('.proj-preuves');
-    if (chip) {
-      e.preventDefault();
-      e.stopPropagation();
-      openPreuvesModal(chip.dataset.preuvesSlug);
-      return;
-    }
     const tag = e.target.closest('.proj-tag-clickable');
     if (!tag) return;
     e.preventDefault();
@@ -370,13 +348,6 @@ function buildThematiques(container) {
     if (project) openCompetencyModal(project);
   });
 
-  // Accessibilité clavier pour la puce « preuves » (span role=button)
-  container.addEventListener('keydown', e => {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('proj-preuves')) {
-      e.preventDefault();
-      openPreuvesModal(e.target.dataset.preuvesSlug);
-    }
-  });
 }
 
 // ============================================
@@ -515,9 +486,8 @@ function buildTimeline(container) {
 function buildSoftwareSkills(container) {
   if (!container || typeof softwareSkillsData === 'undefined') return;
 
-  // Sur les écrans tactiles (pas de hover réel), le flip se fait au tap
-  const supportsHover = window.matchMedia('(hover: hover)').matches;
-
+  // Le retournement se fait au clic, jamais au survol : sur une grille de
+  // quatre cartes, le simple passage de la souris les faisait toutes tourner.
   softwareSkillsData.forEach((skill, i) => {
     const card = document.createElement('div');
     card.className = 'skill-flip-card reveal';
@@ -528,10 +498,10 @@ function buildSoftwareSkills(container) {
     if (skill.logos && skill.logos.length) {
       logoBlockHTML = `
         <div class="skill-logo skill-logo-group">
-          ${skill.logos.map(src => `<img src="${src}" alt="Logo ${skill.name}">`).join('')}
+          ${skill.logos.map(src => `<img src="${src}" alt="Logo ${skill.name}" width="52" height="52" loading="lazy" decoding="async">`).join('')}
         </div>`;
     } else if (skill.logo) {
-      logoBlockHTML = `<div class="skill-logo"><img src="${skill.logo}" alt="Logo ${skill.name}"></div>`;
+      logoBlockHTML = `<div class="skill-logo"><img src="${skill.logo}" alt="Logo ${skill.name}" width="76" height="76" loading="lazy" decoding="async"></div>`;
     } else {
       logoBlockHTML = `<div class="skill-logo"><span>${skill.initials}</span></div>`;
     }
@@ -562,9 +532,17 @@ function buildSoftwareSkills(container) {
       </div>
     `;
 
-    if (!supportsHover) {
-      card.addEventListener('click', () => card.classList.toggle('flipped'));
-    }
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `${skill.name} — voir le détail`);
+    const flip = () => {
+      const on = card.classList.toggle('flipped');
+      card.setAttribute('aria-pressed', String(on));
+    };
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+    });
 
     container.appendChild(card);
   });
@@ -614,17 +592,13 @@ function buildCompetences(container) {
       </div>
     `).join('');
 
-    const barColor = (comp.gradient.match(/#[0-9A-Fa-f]{6}/) || ['#888'])[0];
     wrap.innerHTML = `
-      <div class="comp-card reveal" data-id="${comp.id}" style="border-left-color: ${barColor}">
-        <div class="comp-card-bg"></div>
-        <div class="comp-card-gradient" style="background: ${comp.gradient}"></div>
-        <div class="comp-card-overlay"></div>
+      <div class="comp-card reveal" data-id="${comp.id}">
         <div class="comp-content">
           <div class="comp-num">Compétence ${comp.number}</div>
           <div class="comp-name">${comp.name}</div>
           <div class="comp-level-badge">${comp.levelAchieved}</div>
-          <div class="comp-desc">${comp.levelDesc}</div>
+          <div class="comp-desc"><span class="comp-desc-inner">${comp.levelDesc}</span></div>
           <div class="comp-cta">
             <span>Voir les apprentissages</span>
             <span>→</span>
@@ -671,10 +645,12 @@ function initHeroParallax() {
     const raw      = scrollY / (heroH * 1.0);
     const progress = Math.min(Math.max(raw, 0), 1);
 
-    // Amplitude : 110 vw sur desktop garantit la sortie complète du cadre.
-    // Sur mobile (< 600 px) on réduit à 55 vw pour garder une lecture propre.
+    // Le V1 poussait les lignes à ±110vw : le titre sortait entièrement du
+    // cadre au premier défilement. C'est un effet de bande-annonce, il
+    // n'aide pas à lire. Réduit à une dérive de 12vw, qui accompagne le
+    // défilement sans emporter le texte.
     const isMobile = window.innerWidth < 600;
-    const maxVw    = isMobile ? 55 : 110;
+    const maxVw    = isMobile ? 6 : 12;
 
     const offset = progress * maxVw;
 
@@ -721,27 +697,18 @@ function initReveal() {
 }
 
 // ============================================
-// PAGE TRANSITION (fade entrée)
+// PAGE TRANSITION
 // ============================================
+// Le V1 mettait `body.opacity = 0` puis attendait 350ms avant de changer
+// de page, à chaque lien interne. Un quart de seconde d'attente ajoutée à
+// un chargement déjà instantané se ressent comme de la lenteur, pas comme
+// une transition. Il ne reste que le fondu d'arrivée, qui ne retarde rien.
 function initPageTransition() {
-  document.body.style.opacity = '0';
-  document.body.style.transition = 'opacity 0.4s ease';
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      document.body.style.opacity = '1';
-    });
-  });
-
-  document.querySelectorAll('a[href]').forEach(link => {
-    const href = link.getAttribute('href');
-    if (href && !href.startsWith('#') && !href.startsWith('http') && !href.startsWith('mailto')) {
-      link.addEventListener('click', e => {
-        e.preventDefault();
-        document.body.style.opacity = '0';
-        setTimeout(() => { window.location.href = href; }, 350);
-      });
-    }
-  });
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.body.animate(
+    [{ opacity: 0 }, { opacity: 1 }],
+    { duration: 240, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+  );
 }
 
 // ============================================
@@ -770,7 +737,7 @@ function initScrollWords() {
   if (n === 0) return;
 
   // État initial : tous les mots en gris clair
-  words.forEach(w => { w.style.color = 'var(--light-gray)'; });
+  words.forEach(w => { w.style.color = 'var(--ash)'; });
 
   let ticking = false;
 
@@ -787,7 +754,7 @@ function initScrollWords() {
     const activeCount = Math.round(progress * n);
 
     words.forEach((w, i) => {
-      w.style.color = i < activeCount ? 'var(--dark)' : 'var(--light-gray)';
+      w.style.color = i < activeCount ? 'var(--ink)' : 'var(--ash)';
     });
 
     ticking = false;
@@ -805,10 +772,16 @@ function initScrollWords() {
 }
 
 // ============================================
-// PREUVES — puce cartes (index) + section pages projet + visionneuse
+// PREUVES — figures en pleine largeur + visionneuse
 // ============================================
+// Le V1 rangeait les 36 captures et les 9 PDF derrière une modale
+// ouverte depuis une puce discrète : 46 Mo de matière réelle que
+// personne n'allait chercher. Or c'est la seule matière du site —
+// tout le reste est une carte blanche arrondie contenant du texte.
+// Les preuves sont désormais dans le flux de la page projet, en
+// pleine largeur, chacune avec sa légende.
 
-// Nom affichable d'un projet à partir de son slug (recherche dans thematiquesData)
+// Nom affichable d'un projet à partir de son slug
 function getProjectName(slug) {
   if (typeof thematiquesData === 'undefined') return '';
   for (const t of thematiquesData) {
@@ -819,124 +792,72 @@ function getProjectName(slug) {
   return '';
 }
 
-// Puce discrète affichée en bas des cartes projet (index)
+// Sur les cartes de l'accueil, la puce devient un lien : elle mène à la
+// section preuves de la page projet plutôt qu'à une fenêtre superposée.
 function preuvesChipHTML(slug) {
   const list = (typeof preuvesData !== 'undefined') ? preuvesData[slug] : null;
   if (!list || !list.length) return '';
   const n = list.length;
-  return `<span class="proj-preuves" data-preuves-slug="${slug}" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Voir les ${n} preuves de ce projet">
-      <svg class="proj-preuves-ico" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h4"/>
-      </svg>
-      <span>Voir les ${n} preuve${n > 1 ? 's' : ''}</span>
-      <span class="proj-preuves-arrow" aria-hidden="true">›</span>
+  return `<span class="proj-preuves">
+      <span>${n} preuve${n > 1 ? 's' : ''} à l'appui</span>
+      <span class="proj-preuves-arrow" aria-hidden="true">→</span>
     </span>`;
 }
 
-// Aperçu d'un PDF : même chemin que le .pdf, suffixe -preview.png (généré via qlmanage)
+// Aperçu d'un PDF : même chemin, suffixe -preview.png
 function preuvePdfPreview(file) { return file.replace(/\.pdf$/i, '-preview.png'); }
 
-// Carte d'une preuve — visuel + explications côte à côte (modale index + section pages projet)
-function renderPreuveCard(p, slug, idx) {
+// Une preuve = une figure. Le visuel porte la page, la légende l'explique.
+function renderPreuveFigure(p, slug, idx) {
   const isPdf = /\.pdf$/i.test(p.files[0]);
-  let visual, action;
+  const many  = p.files.length > 1;
 
-  if (isPdf) {
-    visual = `
-      <div class="preuve-visual preuve-visual--single">
-        <button type="button" class="preuve-thumb preuve-thumb--pdf" data-pdf="${p.files[0]}" aria-label="Ouvrir le PDF : ${p.name}">
-          <img src="${preuvePdfPreview(p.files[0])}" alt="Aperçu de ${p.name}" loading="lazy">
-          <span class="preuve-thumb-badge">PDF</span>
-          <span class="preuve-thumb-hint" aria-hidden="true">Ouvrir ↗</span>
-        </button>
-      </div>`;
-    action = `<a class="preuve-link" href="${p.files[0]}" target="_blank" rel="noopener noreferrer">Ouvrir le PDF <span aria-hidden="true">↗</span></a>`;
-  } else {
-    const multi = p.files.length > 1;
-    visual = `
-      <div class="preuve-visual preuve-visual--${multi ? 'multi' : 'single'}">
-        ${p.files.map((f, i) => `
-          <button type="button" class="preuve-thumb" data-slug="${slug}" data-pidx="${idx}" data-img="${i}" aria-label="Agrandir : ${p.name} (${i + 1} sur ${p.files.length})">
-            <img src="${f}" alt="${p.name} — visuel ${i + 1}" loading="lazy">
-            <span class="preuve-thumb-hint" aria-hidden="true">Agrandir ⤢</span>
-          </button>`).join('')}
-      </div>`;
-    action = `<span class="preuve-link preuve-link--muted">${multi ? 'Cliquer une image pour l\'agrandir' : 'Cliquer pour agrandir'}</span>`;
-  }
+  const visuals = isPdf
+    ? `<a class="preuve-frame preuve-frame--pdf" href="${p.files[0]}" target="_blank" rel="noopener noreferrer">
+         <img src="${preuvePdfPreview(p.files[0])}" alt="Première page de ${p.name}" loading="lazy" decoding="async" width="1200" height="1600">
+         <span class="preuve-badge">PDF</span>
+         <span class="preuve-zoom" aria-hidden="true">Ouvrir le document ↗</span>
+       </a>`
+    : p.files.map((f, i) => `
+        <button type="button" class="preuve-frame" data-slug="${slug}" data-pidx="${idx}" data-img="${i}"
+                aria-label="Agrandir : ${p.name} (${i + 1} sur ${p.files.length})">
+          <img src="${f}" alt="${p.name} — visuel ${i + 1}" loading="lazy" decoding="async" width="1600" height="1000">
+          <span class="preuve-zoom" aria-hidden="true">Agrandir ⤢</span>
+        </button>`).join('');
 
   return `
-    <article class="preuve-card">
-      ${visual}
-      <div class="preuve-card-body">
-        <div class="preuve-card-meta">
-          <span class="preuve-format">${p.format}</span>
+    <figure class="preuve-figure reveal">
+      <div class="preuve-visuals${many ? ' preuve-visuals--multi' : ''}">${visuals}</div>
+      <figcaption class="preuve-caption">
+        <p class="preuve-meta">
+          <span>${p.format}</span>
+          <span class="preuve-meta-sep" aria-hidden="true">·</span>
           <span class="preuve-comp">${p.competence}</span>
-        </div>
-        <h4 class="preuve-name">${p.name}</h4>
+        </p>
+        <h3 class="preuve-name">${p.name}</h3>
         <p class="preuve-desc">${p.description}</p>
-        ${action}
-      </div>
-    </article>`;
+      </figcaption>
+    </figure>`;
 }
 
-// Section « Preuves associées » injectée dans les pages projet
-function buildPreuvesSection(slug, mount) {
+// Section « Preuves » d'une page projet
+function buildPreuvesSection(section) {
+  const slug = section.dataset.slug || '';
   const list = (typeof preuvesData !== 'undefined') ? (preuvesData[slug] || []) : [];
-  if (!list.length) { mount.remove(); return; }
+  if (!list.length) { section.remove(); return; }
   const n = list.length;
-  mount.innerHTML = `
-    <div class="section-label">Preuves associées</div>
-    <h2 class="section-title">${n} preuve${n > 1 ? 's' : ''} à l'appui de ce projet</h2>
-    <p class="prose" style="margin-bottom:1.75rem">Le récit ci-dessus s'appuie sur des réalisations concrètes, visibles directement ci-dessous — cliquez sur un visuel pour l'agrandir.</p>
-    <div class="preuve-list">
-      ${list.map((p, i) => renderPreuveCard(p, slug, i)).join('')}
+  section.innerHTML = `
+    <div class="preuves-head reveal">
+      <p class="section-label">Preuves associées</p>
+      <h2 class="section-title">${n} preuve${n > 1 ? 's' : ''} à l'appui de ce projet</h2>
+      <p class="prose">Le récit ci-dessus s'appuie sur des réalisations concrètes. Elles sont ici en entier, dans l'ordre du projet.</p>
+    </div>
+    <div class="preuves-list">
+      ${list.map((p, i) => renderPreuveFigure(p, slug, i)).join('')}
     </div>`;
 }
 
-// Modale « liste des preuves » (déclenchée par la puce des cartes index)
-function getPreuvesModal() {
-  let overlay = document.getElementById('preuves-modal');
-  if (overlay) return overlay;
-
-  overlay = document.createElement('div');
-  overlay.className = 'comp-modal-overlay preuves-modal-overlay';
-  overlay.id = 'preuves-modal';
-  overlay.innerHTML = `
-    <div class="comp-modal preuves-modal" role="dialog" aria-modal="true" aria-labelledby="preuves-modal-title">
-      <button class="comp-modal-close" aria-label="Fermer la fenêtre">&times;</button>
-      <div class="comp-modal-header">
-        <span class="comp-modal-eyebrow">Preuves du projet</span>
-        <h3 class="comp-modal-project" id="preuves-modal-title"></h3>
-      </div>
-      <div class="comp-modal-body preuves-modal-body"></div>
-    </div>`;
-  document.body.appendChild(overlay);
-
-  const close = () => {
-    overlay.classList.remove('open');
-    if (!document.querySelector('#preuve-lightbox.open')) document.body.style.overflow = '';
-  };
-  overlay.querySelector('.comp-modal-close').addEventListener('click', close);
-  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && overlay.classList.contains('open') && !document.querySelector('#preuve-lightbox.open')) close();
-  });
-
-  return overlay;
-}
-
-function openPreuvesModal(slug) {
-  const list = (typeof preuvesData !== 'undefined') ? (preuvesData[slug] || []) : [];
-  if (!list.length) return;
-  const overlay = getPreuvesModal();
-  overlay.querySelector('.comp-modal-project').textContent = getProjectName(slug) || 'Preuves';
-  overlay.querySelector('.preuves-modal-body').innerHTML = list.map((p, i) => renderPreuveCard(p, slug, i)).join('');
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-// Visionneuse plein écran (lightbox) pour les preuves images
+// Visionneuse plein écran, conservée pour lire une capture en détail
 let lightboxState = { files: [], idx: 0, caption: '' };
 
 function getLightbox() {
@@ -958,7 +879,7 @@ function getLightbox() {
 
   const close = () => {
     lb.classList.remove('open');
-    if (!document.querySelector('#preuves-modal.open')) document.body.style.overflow = '';
+    document.body.style.overflow = '';
   };
   lb.querySelector('.plb-close').addEventListener('click', close);
   lb.addEventListener('click', e => { if (e.target === lb) close(); });
@@ -979,14 +900,14 @@ function showLightbox(i) {
   const { files, caption } = lightboxState;
   const n = files.length;
   if (!n) return;
-  lightboxState.idx = (i + n) % n; // navigation circulaire
+  lightboxState.idx = (i + n) % n;
   const img = lb.querySelector('.plb-img');
   img.src = files[lightboxState.idx];
   img.alt = `${caption} — visuel ${lightboxState.idx + 1}`;
   lb.querySelector('.plb-caption').textContent = n > 1
     ? `${caption} · ${lightboxState.idx + 1} / ${n}`
     : caption;
-  lb.querySelectorAll('.plb-nav').forEach(b => { b.style.display = n > 1 ? '' : 'none'; });
+  lb.querySelectorAll('.plb-nav').forEach(b => { b.hidden = n < 2; });
 }
 
 function openLightbox(files, startIndex, caption) {
@@ -997,23 +918,14 @@ function openLightbox(files, startIndex, caption) {
   document.body.style.overflow = 'hidden';
 }
 
-// Délégation globale : clic sur une miniature → zoom (image) ou ouverture (PDF)
 function initPreuvesGlobal() {
   document.addEventListener('click', e => {
-    const pdfThumb = e.target.closest('.preuve-thumb--pdf[data-pdf]');
-    if (pdfThumb) {
-      e.preventDefault();
-      window.open(pdfThumb.dataset.pdf, '_blank', 'noopener,noreferrer');
-      return;
-    }
-    const thumb = e.target.closest('.preuve-thumb[data-slug]');
-    if (!thumb) return;
+    const frame = e.target.closest('.preuve-frame[data-slug]');
+    if (!frame) return;
     e.preventDefault();
-    const slug = thumb.dataset.slug;
-    const pidx = +thumb.dataset.pidx;
-    const img = +thumb.dataset.img || 0;
-    const p = (typeof preuvesData !== 'undefined') ? (preuvesData[slug] || [])[pidx] : null;
-    if (p && p.files && p.files.length) openLightbox(p.files, img, p.name);
+    const p = (typeof preuvesData !== 'undefined')
+      ? (preuvesData[frame.dataset.slug] || [])[+frame.dataset.pidx] : null;
+    if (p && p.files && p.files.length) openLightbox(p.files, +frame.dataset.img || 0, p.name);
   });
 }
 
@@ -1044,7 +956,7 @@ function initContactForm() {
     e.preventDefault();
     const key = (form.querySelector('[name="access_key"]') || {}).value || '';
     if (key.indexOf('VOTRE_CLE') === 0 || !key) {
-      status.textContent = "⚠ Formulaire pas encore activé (clé Web3Forms manquante).";
+      status.textContent = "Formulaire pas encore activé (clé Web3Forms manquante).";
       status.className = 'form-status form-status--error';
       return;
     }
@@ -1062,15 +974,15 @@ function initContactForm() {
       });
       const json = await res.json();
       if (json.success) {
-        status.textContent = '✓ Merci ! Votre message a bien été envoyé.';
+        status.textContent = 'Merci, votre message a bien été envoyé.';
         status.className = 'form-status form-status--ok';
         form.reset();
       } else {
-        status.textContent = '✗ ' + (json.message || 'Une erreur est survenue, réessayez plus tard.');
+        status.textContent = json.message || 'Une erreur est survenue, réessayez plus tard.';
         status.className = 'form-status form-status--error';
       }
     } catch (err) {
-      status.textContent = "✗ Impossible d'envoyer le message. Vérifiez votre connexion et réessayez.";
+      status.textContent = "Impossible d'envoyer le message. Vérifiez votre connexion et réessayez.";
       status.className = 'form-status form-status--error';
     } finally {
       btn.disabled = false;
@@ -1117,9 +1029,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (compContainer) buildCompetences(compContainer);
 
   // Pages projet — section « Preuves associées »
-  const preuvesMount = document.getElementById('preuves-mount');
-  if (preuvesMount) buildPreuvesSection(preuvesMount.dataset.slug || '', preuvesMount);
-  initPreuvesGlobal(); // visionneuse (délégation) — sans effet si aucune preuve sur la page
+  const preuvesSection = document.querySelector('.preuves[data-slug]');
+  if (preuvesSection) buildPreuvesSection(preuvesSection);
+  initPreuvesGlobal(); // visionneuse — sans effet si aucune preuve sur la page
 
   // Reveal (après injection du contenu dynamique)
   setTimeout(initReveal, 50);

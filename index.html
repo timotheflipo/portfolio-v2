@@ -7,74 +7,125 @@
   <title>Timothé Flipo — Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=119">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg?v=200" type="image/svg+xml">
+  <link rel="canonical" href="https://timotheflipo.github.io/portfolio-v2/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Timothé Flipo — Portfolio">
+  <meta property="og:title" content="Timothé Flipo — Portfolio">
+  <meta property="og:description" content="Portfolio de Timothé Flipo — Étudiant BUT GEA Parcours GEMA, alternant chez Roole, futur master Management Stratégique à Paris-Saclay.">
+  <meta property="og:url" content="https://timotheflipo.github.io/portfolio-v2/">
+  <meta property="og:image" content="https://timotheflipo.github.io/portfolio-v2/images/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f2f1ec">
+  <!-- Sans JavaScript, les blocs animés à l'apparition doivent rester lisibles :
+       la classe est posée avant le premier rendu, et c'est elle qui autorise le masquage. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="css/style.css?v=200">
 </head>
 <body>
 
   <!-- =========================================
        SECTION 1 — HERO
        ========================================= -->
+  <!-- =========================================
+       ACCUEIL — les quarante premières secondes
+       Le V1 ouvrait sur une problématique de soutenance et sur trois
+       capsules « 8 projets · 8 problèmes · 8 solutions », la ligne de
+       stats d'un hero SaaS. Un recruteur cherche autre chose : qui,
+       quoi aujourd'hui, ce qui est recherché, la disponibilité, et
+       une preuve sur laquelle cliquer. Les réponses existaient déjà
+       sur le site — elles étaient dans la FAQ, tout en bas.
+       ========================================= -->
   <section class="hero" id="hero">
     <div class="hero-inner">
-      <p class="hero-eyebrow">Portfolio · BUT GEA · Parcours GEMA</p>
-      <h1 class="hero-title">
-        <span class="hero-line hero-line-1">Créatif et curieux par nature.</span>
-        <span class="hero-line hero-line-2">Méthodique et organisé dans l'action.</span>
-      </h1>
-      <!-- Bloc accroche : capsules + problématique -->
-      <div class="hero-block">
-        <div class="hero-caps">
-          <span class="hero-cap">8 projets.</span>
-          <span class="hero-cap-sep" aria-hidden="true">·</span>
-          <span class="hero-cap">8 problèmes.</span>
-          <span class="hero-cap-sep" aria-hidden="true">·</span>
-          <span class="hero-cap">8 solutions.</span>
-        </div>
-        <p class="hero-block-q">
-          Comment mon profil atypique est-il devenu une force pour repérer ce qui bloque,
-          structurer ce qui manque et transformer ce qui peut l'être ?
+
+      <div class="hero-main">
+        <p class="eyebrow eyebrow--accent">Portfolio · BUT GEA · Parcours GEMA</p>
+        <h1 class="hero-title">
+          <span class="hero-line hero-line-1">Créatif et curieux par nature.</span>
+          <span class="hero-line hero-line-2">Méthodique et organisé dans l'action.</span>
+        </h1>
+        <p class="hero-lede">
+          Timothé Flipo — chargé de marketing BtoB en alternance chez Roole,
+          en troisième année de BUT Gestion des Entreprises et des Administrations
+          à l'IUT de Paris&nbsp;- Rives de Seine.
         </p>
+        <div class="hero-cta">
+          <a class="btn btn-dark" href="CV_Timothe_Flipo.pdf" download>Télécharger mon CV</a>
+          <a class="btn btn-outline" href="contact.html">Me contacter</a>
+        </div>
       </div>
 
-      <!-- Mini-timeline de parcours -->
-      <div class="hero-timeline" aria-label="Parcours">
-        <div class="htl-item" data-status="past">
-          <span class="htl-dot"></span>
-          <time class="htl-years">2023 – 2026</time>
-          <span class="htl-label">BUT GEA, parcours GEMA</span>
-        </div>
-        <div class="htl-sep" role="presentation"></div>
-        <div class="htl-item" data-status="current">
-          <span class="htl-dot"></span>
-          <time class="htl-years">2025 – 2027</time>
-          <span class="htl-label">Chargé de marketing BtoB chez Roole</span>
-        </div>
-        <div class="htl-sep" role="presentation"></div>
-        <div class="htl-item" data-status="future">
-          <span class="htl-dot"></span>
-          <time class="htl-years">2026 – 2028</time>
-          <span class="htl-label">Master Management Stratégique et Changement</span>
-        </div>
+      <aside class="hero-facts" aria-label="En bref">
+        <dl class="hero-facts-list">
+          <div class="hero-fact">
+            <dt>Recherche</dt>
+            <dd>Une alternance en gestion de projet, pilotage, transformation ou coordination.</dd>
+          </div>
+          <div class="hero-fact">
+            <dt>Disponible</dt>
+            <dd>Septembre 2026, pour un master en alternance sur deux ans.</dd>
+          </div>
+          <div class="hero-fact">
+            <dt>Rythme</dt>
+            <dd>Deux semaines en entreprise, une semaine en formation.</dd>
+          </div>
+          <div class="hero-fact">
+            <dt>Où</dt>
+            <dd>Suresnes (92) · Île-de-France.</dd>
+          </div>
+        </dl>
+        <a class="hero-proof" href="breathe-go.html">
+          <span class="hero-proof-label">La preuve la plus courte</span>
+          <span class="hero-proof-title">Breathe&amp;Go, deux prix de l'entrepreneuriat</span>
+          <span class="hero-proof-arrow" aria-hidden="true">↗</span>
+        </a>
+      </aside>
+
+    </div>
+
+    <!-- Mini-timeline de parcours -->
+    <div class="hero-timeline" aria-label="Parcours">
+      <div class="htl-item" data-status="past">
+        <span class="htl-dot"></span>
+        <time class="htl-years">2023 – 2026</time>
+        <span class="htl-label">BUT GEA, parcours GEMA</span>
       </div>
-      <div class="hero-cta">
-        <button type="button" class="btn btn-dark" onclick="window.open('CV_Timothe_Flipo.pdf','_blank','noopener,noreferrer')">
-          Mon CV ↗
-        </button>
-        <a class="btn btn-outline" href="contact.html">Me contacter</a>
+      <div class="htl-sep" role="presentation"></div>
+      <div class="htl-item" data-status="current">
+        <span class="htl-dot"></span>
+        <time class="htl-years">2025 – 2027</time>
+        <span class="htl-label">Chargé de marketing BtoB chez Roole</span>
       </div>
-      <div class="scroll-hint">
-        <div class="scroll-line"></div>
-        <span>Découvrir</span>
-        <svg class="scroll-chevron" viewBox="0 0 14 8" fill="none" aria-hidden="true">
-          <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+      <div class="htl-sep" role="presentation"></div>
+      <div class="htl-item" data-status="future">
+        <span class="htl-dot"></span>
+        <time class="htl-years">2026 – 2028</time>
+        <span class="htl-label">Master Management Stratégique et Changement</span>
       </div>
+    </div>
+
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Découvrir</span>
+      <svg class="scroll-chevron" viewBox="0 0 14 8" fill="none" aria-hidden="true">
+        <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
   </section>
 
   <!-- =========================================
        SECTION 2 — NOTION / SECOND CERVEAU
+       ========================================= -->
+  <!-- =========================================
+       SECTION 2 — MA MANIÈRE DE TRAVAILLER
+       Deuxième rupture de rythme : la figure sort de la colonne et
+       occupe toute la largeur de l'écran, au lieu de rester une image
+       parmi d'autres dans un conteneur de 1200px.
        ========================================= -->
   <section class="notion-section" id="notion">
     <div class="notion-header reveal">
@@ -82,24 +133,44 @@
         Avant de parler projets et compétences,<br>
         découvrez ma manière de travailler
       </h2>
-      <p>
+      <p class="lede">
         Mon second cerveau Notion — un espace personnel pour organiser mes idées,
         mes connaissances et mes projets.
       </p>
     </div>
 
-    <div class="notion-grid">
-      <!-- Mockup MacBook Pro 16" avec second cerveau Notion -->
-      <div class="laptop-wrap reveal-l">
-        <img src="images/notion_mockup.png"
-             alt="Second cerveau Notion — Timothé Flipo"
-             class="notion-mockup-img">
-      </div>
+    <figure class="notion-figure reveal">
+      <img src="images/notion_mockup.png"
+           alt="Vue du second cerveau Notion de Timothé Flipo"
+           class="notion-mockup-img"
+           width="1400" height="1197" loading="lazy" decoding="async">
+      <figcaption>L'espace Notion tel qu'il est organisé aujourd'hui.</figcaption>
+    </figure>
 
-      <!-- Blocs texte droite -->
-      <div class="notion-blocks reveal-r" id="notion-blocks">
-        <!-- Injecté par buildNotionBlocks() dans main.js -->
-      </div>
+    <div class="notion-blocks reveal" id="notion-blocks">
+      <!-- Injecté par buildNotionBlocks() dans main.js -->
+    </div>
+  </section>
+
+  <!-- =========================================
+       RUPTURE — la problématique du portfolio
+       Le contenu du V1 est conservé mot pour mot. Il quitte simplement
+       le centre du premier écran, où il tenait la place d'un artefact
+       de soutenance, pour devenir la charnière entre la méthode et les
+       projets. La valeur sombre est la même qu'au pied de page : elle
+       casse la succession de conteneurs beiges de 1200px.
+       ========================================= -->
+  <section class="band" id="problematique">
+    <div class="band-inner reveal">
+      <p class="eyebrow band-eyebrow">Le fil de ce portfolio</p>
+      <p class="band-question">
+        Comment mon profil atypique est-il devenu une force pour repérer ce qui bloque,
+        structurer ce qui manque et transformer ce qui peut l'être&nbsp;?
+      </p>
+      <p class="band-answer">
+        Huit projets y répondent, chacun parti d'un problème réel rencontré en
+        entreprise, en cours ou sur le terrain.
+      </p>
     </div>
   </section>
 
@@ -148,12 +219,15 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA</span>
+      <span class="footer-copy">
+        © 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA
+        <a class="footer-legal" href="mentions-legales.html">Mentions légales &amp; données personnelles</a>
+      </span>
       <button type="button" class="footer-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Haut de page ↑</button>
     </div>
   </footer>
 
-  <script src="js/data.js?v=119"></script>
-  <script src="js/main.js?v=119"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/main.js?v=200"></script>
 </body>
 </html>

@@ -7,186 +7,133 @@
   <title>Transformation numérique — Timothé Flipo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,700;1,700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=119">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg?v=200" type="image/svg+xml">
+  <link rel="canonical" href="https://timotheflipo.github.io/portfolio-v2/transfo-numerique.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Timothé Flipo — Portfolio">
+  <meta property="og:title" content="Transformation numérique — Timothé Flipo">
+  <meta property="og:description" content="Piloter une transformation numérique par les KPI — Projet de Timothé Flipo chez Roole.">
+  <meta property="og:url" content="https://timotheflipo.github.io/portfolio-v2/transfo-numerique.html">
+  <meta property="og:image" content="https://timotheflipo.github.io/portfolio-v2/images/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f2f1ec">
+  <!-- Sans JavaScript, les blocs animés à l'apparition doivent rester lisibles :
+       la classe est posée avant le premier rendu, et c'est elle qui autorise le masquage. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="css/style.css?v=200">
   <style>
-
-    /* ---- Hero ---- */
-    .proj-hero {
-      padding: calc(var(--header-h) + 5rem) 2rem 4rem;
-      background-color: var(--bg);
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-    }
-    .proj-hero-inner { max-width: 860px; margin: 0 auto; }
-    .proj-breadcrumb {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.7rem; color: var(--light-gray);
-      margin-bottom: 1.75rem; text-transform: uppercase;
-      letter-spacing: 0.1em; font-weight: 600;
-    }
-    .proj-breadcrumb a { color: var(--light-gray); transition: color .2s; }
-    .proj-breadcrumb a:hover { color: var(--accent); }
-    .proj-breadcrumb-sep { opacity: 0.4; }
-    .proj-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 0.7rem; text-transform: uppercase;
-      letter-spacing: 0.18em; color: var(--accent); font-weight: 700; margin-bottom: 1rem;
-    }
-    .proj-eyebrow::before {
-      content: ''; display: block; width: 18px; height: 1.5px;
-      background-color: var(--accent); opacity: 0.6;
-    }
-    .proj-title {
-      font-family: 'Montserrat', sans-serif; font-weight: 800;
-      font-size: clamp(1.6rem, 3.5vw, 2.7rem); line-height: 1.2;
-      color: var(--dark); margin-bottom: 1rem;
-    }
-    .proj-subtitle {
-      font-size: 0.92rem; color: var(--gray); line-height: 1.75;
-      max-width: 620px; margin-bottom: 1.75rem;
-    }
-    .proj-tags-hero { display: flex; flex-wrap: wrap; gap: 8px; }
-    .proj-tag-hero {
-      padding: 5px 14px; border-radius: 50px; font-size: 0.68rem;
-      font-weight: 700; letter-spacing: 0.04em;
-      background-color: var(--accent-muted); color: var(--accent-dark);
-      border: 1px solid var(--accent-border);
-    }
-
-    /* ---- Contenu ---- */
-    .proj-content { padding: 5rem 2rem 8rem; }
-    .proj-content-inner {
-      max-width: 860px; margin: 0 auto;
-      display: flex; flex-direction: column; gap: 5rem;
-    }
-    .section-label {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 0.62rem; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--accent);
-      font-weight: 700; margin-bottom: 0.6rem;
-    }
-    .section-label::after { content: ''; width: 32px; height: 1px; background-color: var(--accent); opacity: 0.35; }
-    .section-title {
-      font-family: 'Montserrat', sans-serif; font-weight: 700;
-      font-size: 1.2rem; color: var(--dark); margin-bottom: 1.5rem; line-height: 1.3;
-    }
-
+    /* Composants propres à cette page.
+       Tout ce qui est commun aux huit pages projet vit dans css/style.css. */
     /* ---- Diagnostic DIMM ---- */
     .dimm-header {
-      display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+      display: flex; align-items: center; gap: var(--gap); margin-bottom: 1.25rem; flex-wrap: wrap;
     }
     .dimm-badge {
-      padding: 4px 14px; border-radius: 50px; font-size: 0.64rem; font-weight: 800;
+      padding: 4px 14px; border-radius: var(--radius-pill); font-size: var(--text-caption); font-weight: 800;
       letter-spacing: 0.1em; text-transform: uppercase;
-      background-color: var(--dark); color: var(--white);
+      background-color: var(--ink); color: var(--white);
     }
     .dimm-subtitle {
-      font-size: 0.82rem; color: var(--gray);
+      font-size: var(--text-body); color: var(--stone);
     }
     .frictions {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap);
     }
     .friction-card {
-      background-color: var(--white); border-radius: var(--r-lg);
-      padding: 1.4rem; border: 1px solid var(--card-border);
-      border-top: 3px solid var(--accent);
-      transition: box-shadow .25s, transform .25s;
+      background-color: var(--white); border-radius: var(--radius-card);
+      padding: 1.4rem; border: 1px solid var(--rule-soft);
+      border-top: 3px solid var(--rule);
+      transition: box-shadow .var(--dur-panel) var(--ease-out), transform .var(--dur-panel) var(--ease-out);
     }
-    .friction-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+    
     .friction-label {
-      font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.12em; color: var(--accent); margin-bottom: 8px;
+      font-size: var(--text-caption); font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--ink); margin-bottom: 8px;
     }
-    .friction-card h4 { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin-bottom: 5px; }
-    .friction-card p { font-size: 0.78rem; color: var(--gray); line-height: 1.62; }
+    .friction-card h4 { font-size: var(--text-body); font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .friction-card p { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.62; }
 
     /* ---- 3 Chantiers ---- */
     .chantiers {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap);
     }
     .chantier {
-      background-color: var(--white); border-radius: var(--r-xl);
-      padding: 2rem 1.5rem; border: 1px solid var(--card-border);
+      background-color: var(--white); border-radius: var(--radius-card);
+      padding: 2rem 1.5rem; border: 1px solid var(--rule-soft);
       display: flex; flex-direction: column; gap: 0;
-      transition: box-shadow .25s, transform .25s;
+      transition: box-shadow .var(--dur-panel) var(--ease-out), transform .var(--dur-panel) var(--ease-out);
     }
-    .chantier:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+    
     .chantier-num {
-      font-family: 'Montserrat', sans-serif; font-weight: 800;
-      font-size: 3rem; line-height: 1; color: var(--accent);
+      font-family: var(--font-display); font-weight: 800;
+      font-size: var(--text-display); line-height: 1; color: var(--ink);
       opacity: 0.18; margin-bottom: 0.5rem;
       letter-spacing: -0.03em;
     }
     .chantier h4 {
-      font-size: 0.92rem; font-weight: 800; color: var(--dark);
+      font-size: var(--text-body); font-weight: 800; color: var(--ink);
       margin-bottom: 0.75rem; line-height: 1.35;
     }
     .chantier p {
-      font-size: 0.78rem; color: var(--gray); line-height: 1.68; flex: 1;
+      font-size: var(--text-body-sm); color: var(--stone); line-height: 1.68; flex: 1;
       margin-bottom: 1rem;
     }
     .chantier-tag {
-      display: inline-block; padding: 3px 11px; border-radius: 50px;
-      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
-      background-color: var(--accent-muted); color: var(--accent-dark);
-      border: 1px solid var(--accent-border);
+      display: inline-block; padding: 3px 11px; border-radius: var(--radius-pill);
+      font-size: var(--text-caption); font-weight: 700; letter-spacing: 0.04em;
+      background-color: var(--paper); color: var(--ink);
+      border: 1px solid var(--rule-soft);
     }
 
     /* ---- KPI + Executive summary ---- */
     .deliverables {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap);
     }
     .deliverable {
-      background-color: var(--white); border-radius: var(--r-lg);
-      padding: 1.5rem; border: 1px solid var(--card-border);
-      display: flex; gap: 1rem; align-items: flex-start;
-      transition: box-shadow .25s;
+      background-color: var(--white); border-radius: var(--radius-card);
+      padding: 1.5rem; border: 1px solid var(--rule-soft);
+      display: flex; gap: var(--gap); align-items: flex-start;
+      transition: box-shadow .var(--dur-panel) var(--ease-out);
     }
-    .deliverable:hover { box-shadow: var(--shadow-sm); }
-    .deliverable-icon {
-      width: 42px; height: 42px; min-width: 42px; border-radius: var(--r-md);
-      background-color: var(--accent-muted); border: 1px solid var(--accent-border);
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-    }
-    .deliverable h4 { font-size: 0.88rem; font-weight: 700; color: var(--dark); margin-bottom: 5px; }
-    .deliverable p { font-size: 0.78rem; color: var(--gray); line-height: 1.62; }
+    
+    .deliverable h4 { font-size: var(--text-body); font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .deliverable p { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.62; }
 
     /* ---- Banner "au-delà" ---- */
     .beyond-banner {
-      background-color: var(--accent);
-      border-radius: var(--r-xl);
+      background-color: var(--ink);
+      border-radius: var(--radius-card);
       padding: 2.75rem 2.5rem;
-      display: flex; gap: 2rem; align-items: flex-start;
-    }
-    .beyond-icon {
-      font-size: 2rem; flex-shrink: 0; margin-top: 2px;
-      filter: grayscale(1) brightness(2);
+      display: flex; gap: var(--gap-md); align-items: flex-start;
     }
     .beyond-label {
-      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      font-size: var(--text-caption); font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.18em; color: rgba(255,255,255,0.7); margin-bottom: 8px;
     }
     .beyond-title {
-      font-family: 'Montserrat', sans-serif; font-weight: 800;
-      font-size: clamp(1rem, 2.2vw, 1.3rem); color: var(--white);
+      font-family: var(--font-display); font-weight: 800;
+      font-size: var(--text-heading-sm); color: var(--white);
       line-height: 1.3; margin-bottom: 0.75rem;
     }
     .beyond-sub {
-      font-size: 0.84rem; color: rgba(255,255,255,0.78); line-height: 1.72;
+      font-size: var(--text-body); color: rgba(255,255,255,0.78); line-height: 1.72;
     }
 
     /* ---- Espaces Notion ---- */
     .notion-spaces {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap-sm);
     }
     .notion-space {
-      background-color: var(--white); border-radius: var(--r-md);
-      padding: 1.1rem; border: 1px solid var(--card-border); text-align: center;
-      transition: box-shadow .25s, border-color .25s;
+      background-color: var(--white); border-radius: var(--radius);
+      padding: 1.1rem; border: 1px solid var(--rule-soft); text-align: center;
+      transition: box-shadow .var(--dur-panel) var(--ease-out), border-color .var(--dur-panel) var(--ease-out);
     }
-    .notion-space:hover { box-shadow: var(--shadow-sm); border-color: var(--accent-border); }
-    .notion-space-icon { font-size: 1.3rem; margin-bottom: 8px; display: block; }
-    .notion-space h5 { font-size: 0.72rem; font-weight: 700; color: var(--dark); line-height: 1.4; }
+    
+    .notion-space h5 { font-size: var(--text-body-sm); font-weight: 700; color: var(--ink); line-height: 1.4; }
 
     /* ---- Changement de posture ---- */
     .posture-shift {
@@ -194,46 +141,23 @@
       gap: 0; align-items: center;
     }
     .posture-step {
-      background-color: var(--white); border-radius: var(--r-lg);
-      padding: 1.5rem; border: 1px solid var(--card-border); text-align: center;
-      transition: box-shadow .25s;
+      background-color: var(--white); border-radius: var(--radius-card);
+      padding: 1.5rem; border: 1px solid var(--rule-soft); text-align: center;
+      transition: box-shadow .var(--dur-panel) var(--ease-out);
     }
-    .posture-step:hover { box-shadow: var(--shadow-sm); }
-    .posture-step:last-child { background-color: var(--dark); border-color: var(--dark); }
+    
+    .posture-step:last-child { background-color: var(--ink); border-color: var(--ink); }
     .posture-step-num {
-      display: inline-block; font-size: 0.6rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent);
+      display: inline-block; font-size: var(--text-caption); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink);
       margin-bottom: 8px;
     }
-    .posture-step:last-child .posture-step-num { color: var(--accent); }
-    .posture-step h4 { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin-bottom: 5px; line-height: 1.3; }
-    .posture-step p { font-size: 0.75rem; color: var(--gray); line-height: 1.6; }
+    .posture-step:last-child .posture-step-num { color: var(--ink); }
+    .posture-step h4 { font-size: var(--text-body); font-weight: 700; color: var(--ink); margin-bottom: 5px; line-height: 1.3; }
+    .posture-step p { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.6; }
     .posture-step:last-child h4 { color: var(--white); }
     .posture-step:last-child p { color: rgba(255,255,255,0.5); }
-    .posture-arrow { font-size: 1.1rem; color: var(--accent); opacity: 0.5; padding: 0 0.6rem; text-align: center; }
-
-    /* ---- Skills light ---- */
-    .skills-light { padding-top: 3rem; border-top: 1px solid rgba(0,0,0,0.07); }
-    .skills-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem; }
-    .skill-light-card {
-      background-color: var(--white); border-radius: var(--r-md);
-      padding: 1.1rem; border: 1px solid var(--card-border);
-      transition: box-shadow .25s, border-color .25s;
-    }
-    .skill-light-card:hover { box-shadow: var(--shadow-sm); border-color: var(--accent-border); }
-    .skill-light-name {
-      font-size: 0.72rem; font-weight: 800; color: var(--accent);
-      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;
-    }
-    .skill-light-desc { font-size: 0.75rem; color: var(--gray); line-height: 1.62; }
-
-    /* ---- Back ---- */
-    .proj-back {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 0.82rem; font-weight: 600; color: var(--gray);
-      text-decoration: none; transition: color .2s;
-    }
-    .proj-back:hover { color: var(--accent); }
+    .posture-arrow { font-size: var(--text-subheading); color: var(--stone); opacity: 0.5; padding: 0 0.6rem; text-align: center; }
 
     /* ---- Responsive ---- */
     @media (max-width: 860px) {
@@ -241,14 +165,19 @@
       .chantiers { grid-template-columns: 1fr; }
       .deliverables { grid-template-columns: 1fr; }
       .notion-spaces { grid-template-columns: repeat(3, 1fr); }
-      .posture-shift { grid-template-columns: 1fr; gap: 0.75rem; }
+      .posture-shift { grid-template-columns: 1fr; gap: var(--gap-sm); }
       .posture-arrow { transform: rotate(90deg); padding: 0; }
-      .skills-row { grid-template-columns: repeat(2, 1fr); }
-      .beyond-banner { flex-direction: column; gap: 1rem; }
-    }
+      .beyond-banner { flex-direction: column; gap: var(--gap); }}
     @media (max-width: 500px) {
-      .notion-spaces { grid-template-columns: repeat(2, 1fr); }
-      .skills-row { grid-template-columns: 1fr; }
+      .notion-spaces { grid-template-columns: repeat(2, 1fr); }}
+
+    /* Survol : réservé à la souris, sinon l'état reste collé au tap. */
+    @media (hover: hover) and (pointer: fine) {
+      .friction-card:hover { border-color: var(--rule); transform: translateY(-2px); }
+      .chantier:hover { border-color: var(--rule); transform: translateY(-4px); }
+      .deliverable:hover { border-color: var(--rule); }
+      .notion-space:hover { border-color: var(--rule); border-color: var(--rule-soft); }
+      .posture-step:hover { border-color: var(--rule); }
     }
   </style>
 </head>
@@ -341,14 +270,12 @@
         <h2 class="section-title">Rendre la stratégie lisible et mesurable</h2>
         <div class="deliverables">
           <div class="deliverable">
-            <div class="deliverable-icon">📊</div>
             <div>
               <h4>KPI précis et mesurables</h4>
               <p>Définition d'indicateurs pour suivre à la fois l'avancement des chantiers et les effets des transformations proposées dans le temps.</p>
             </div>
           </div>
           <div class="deliverable">
-            <div class="deliverable-icon">📝</div>
             <div>
               <h4>Executive summary</h4>
               <p>Synthèse du fil directeur du projet : contexte sectoriel, problèmes identifiés, plan d'action retenu et indicateurs de suivi.</p>
@@ -359,7 +286,6 @@
 
       <!-- Banner "aller plus loin" -->
       <div class="beyond-banner">
-        <div class="beyond-icon">⚡</div>
         <div>
           <div class="beyond-label">Initiative personnelle</div>
           <h3 class="beyond-title">J'ai choisi d'aller plus loin que ce qui était demandé.</h3>
@@ -373,23 +299,18 @@
         <h2 class="section-title">Cinq espaces complémentaires</h2>
         <div class="notion-spaces">
           <div class="notion-space">
-            <span class="notion-space-icon">🗂</span>
             <h5>Suivi des chantiers</h5>
           </div>
           <div class="notion-space">
-            <span class="notion-space-icon">⚠️</span>
             <h5>Irritants terrain</h5>
           </div>
           <div class="notion-space">
-            <span class="notion-space-icon">🗺</span>
             <h5>Déploiement concessions</h5>
           </div>
           <div class="notion-space">
-            <span class="notion-space-icon">📚</span>
             <h5>Formations vendeurs</h5>
           </div>
           <div class="notion-space">
-            <span class="notion-space-icon">↕️</span>
             <h5>Comparaison avant / après</h5>
           </div>
         </div>
@@ -443,13 +364,16 @@
         </div>
       </div>
 
-      <!-- Retour -->
-      <!-- Preuves associées (injecté par buildPreuvesSection dans main.js) -->
-      <div id="preuves-mount" data-slug="transfo-numerique" class="preuve-section reveal"></div>
-
-      <a href="index.html#proj-transfo-numerique" class="proj-back">← Retour au portfolio</a>
-
     </div>
+  </div>
+
+  <!-- Preuves associées — sorties du flux de la colonne, en pleine largeur.
+       Le V1 les enfermait derrière une modale : 46 Mo de matière réelle que
+       personne n'ouvrait. -->
+  <section class="preuves" id="preuves" data-slug="transfo-numerique"></section>
+
+  <div class="proj-outro">
+    <a href="index.html#proj-transfo-numerique" class="proj-back">← Retour au portfolio</a>
   </div>
 
   <!-- FOOTER -->
@@ -478,12 +402,15 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA</span>
+      <span class="footer-copy">
+        © 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA
+        <a class="footer-legal" href="mentions-legales.html">Mentions légales &amp; données personnelles</a>
+      </span>
       <button type="button" class="footer-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Haut de page ↑</button>
     </div>
   </footer>
 
-  <script src="js/data.js?v=119"></script>
-  <script src="js/main.js?v=119"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/main.js?v=200"></script>
 </body>
 </html>

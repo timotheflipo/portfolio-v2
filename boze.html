@@ -7,77 +7,27 @@
   <title>Les BOZE — Timothé Flipo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=119">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg?v=200" type="image/svg+xml">
+  <link rel="canonical" href="https://timotheflipo.github.io/portfolio-v2/boze.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Timothé Flipo — Portfolio">
+  <meta property="og:title" content="Les BOZE — Timothé Flipo">
+  <meta property="og:description" content="Les BOZE : optimiser et fluidifier un processus interne — Projet de Timothé Flipo chez Roole.">
+  <meta property="og:url" content="https://timotheflipo.github.io/portfolio-v2/boze.html">
+  <meta property="og:image" content="https://timotheflipo.github.io/portfolio-v2/images/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f2f1ec">
+  <!-- Sans JavaScript, les blocs animés à l'apparition doivent rester lisibles :
+       la classe est posée avant le premier rendu, et c'est elle qui autorise le masquage. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="css/style.css?v=200">
   <style>
-    /* ---- Hero projet ---- */
-    .proj-hero {
-      padding: calc(var(--header-h) + 5rem) 2rem 4rem;
-      background-color: var(--bg);
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-    }
-    .proj-hero-inner {
-      max-width: 860px;
-      margin: 0 auto;
-    }
-    .proj-breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.7rem;
-      color: var(--light-gray);
-      margin-bottom: 1.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 600;
-    }
-    .proj-breadcrumb a { color: var(--light-gray); transition: color .2s; }
-    .proj-breadcrumb a:hover { color: var(--accent); }
-    .proj-breadcrumb-sep { opacity: 0.4; }
-    .proj-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    .proj-eyebrow::before {
-      content: '';
-      display: block;
-      width: 18px;
-      height: 1.5px;
-      background-color: var(--accent);
-      opacity: 0.6;
-      flex-shrink: 0;
-    }
-    .proj-title {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 800;
-      font-size: clamp(1.7rem, 3.8vw, 2.9rem);
-      line-height: 1.2;
-      color: var(--dark);
-      margin-bottom: 1.75rem;
-    }
-    .proj-tags-hero {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .proj-tag-hero {
-      padding: 5px 14px;
-      border-radius: 50px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      background-color: var(--accent-muted);
-      color: var(--accent-dark);
-      border: 1px solid var(--accent-border);
-    }
-
+    /* Composants propres à cette page.
+       Tout ce qui est commun aux huit pages projet vit dans css/style.css. */
     /* ---- Chiffres clés ---- */
     .key-numbers {
       background-color: var(--white);
@@ -89,118 +39,52 @@
       padding: 3rem 2rem;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
+      gap: var(--gap);
       text-align: center;
     }
     .key-num-item {
       padding: 1rem;
     }
     .key-num-value {
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-display);
       font-weight: 800;
-      font-size: 2.6rem;
-      color: var(--accent);
+      font-size: var(--text-heading-lg);
+      color: var(--ink);
       line-height: 1;
       margin-bottom: 8px;
     }
     .key-num-label {
-      font-size: 0.78rem;
-      color: var(--gray);
+      font-size: var(--text-body-sm);
+      color: var(--stone);
       line-height: 1.55;
-    }
-
-    /* ---- Contenu ---- */
-    .proj-content {
-      padding: 5rem 2rem 8rem;
-    }
-    .proj-content-inner {
-      max-width: 860px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 4rem;
-    }
-
-    /* Section label */
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.62rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 0.6rem;
-    }
-    .section-label::after {
-      content: '';
-      width: 32px;
-      height: 1px;
-      background-color: var(--accent);
-      opacity: 0.35;
-    }
-    .section-title {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 700;
-      font-size: 1.25rem;
-      color: var(--dark);
-      margin-bottom: 1.25rem;
-      line-height: 1.3;
-    }
-    .prose {
-      font-size: 0.9rem;
-      color: var(--gray);
-      line-height: 1.82;
-    }
-    .prose + .prose { margin-top: 1rem; }
-
-    /* ---- Contexte + Problèmes : 2 colonnes ---- */
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2.5rem;
-      align-items: start;
     }
 
     /* Cards problèmes */
     .problem-list {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: var(--gap-sm);
     }
     .problem-card {
       background-color: var(--white);
-      border-radius: var(--r-md);
+      border-radius: var(--radius);
       padding: 1.1rem 1.25rem;
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--rule-soft);
       display: flex;
-      gap: 1rem;
+      gap: var(--gap);
       align-items: flex-start;
-      transition: box-shadow .25s ease, border-color .25s ease;
+      transition: box-shadow .var(--dur-panel) var(--ease-out), border-color .var(--dur-panel) var(--ease-out);
     }
-    .problem-card:hover {
-      box-shadow: var(--shadow-sm);
-      border-color: var(--accent-border);
-    }
-    .problem-icon {
-      width: 34px; height: 34px; min-width: 34px;
-      border-radius: 50%;
-      background-color: var(--accent-muted);
-      border: 1px solid var(--accent-border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-    }
+    
     .problem-card h4 {
-      font-size: 0.85rem;
+      font-size: var(--text-body);
       font-weight: 700;
-      color: var(--dark);
+      color: var(--ink);
       margin-bottom: 4px;
     }
     .problem-card p {
-      font-size: 0.8rem;
-      color: var(--gray);
+      font-size: var(--text-body);
+      color: var(--stone);
       line-height: 1.62;
     }
 
@@ -208,7 +92,7 @@
     .steps {
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: var(--gap);
       position: relative;
     }
     .steps::before {
@@ -218,12 +102,12 @@
       top: 50px;
       bottom: 50px;
       width: 2px;
-      background: linear-gradient(to bottom, var(--accent-border), var(--muted));
+      background: linear-gradient(to bottom, var(--rule-soft), var(--rule-soft));
       border-radius: 2px;
     }
     .step {
       display: flex;
-      gap: 1.25rem;
+      gap: var(--gap);
       align-items: flex-start;
       position: relative;
       z-index: 1;
@@ -231,32 +115,31 @@
     .step-num {
       width: 40px; height: 40px; min-width: 40px;
       border-radius: 50%;
-      background-color: var(--accent);
+      background-color: var(--ink);
       color: var(--white);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.82rem;
+      font-size: var(--text-body);
       font-weight: 800;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(255,111,60,0.30);
     }
     .step-body {
       background-color: var(--white);
-      border-radius: var(--r-md);
+      border-radius: var(--radius);
       padding: 1.25rem 1.4rem;
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--rule-soft);
       flex: 1;
-      transition: box-shadow .25s ease;
+      transition: box-shadow .var(--dur-panel) var(--ease-out);
     }
-    .step-body:hover { box-shadow: var(--shadow-sm); }
+    
     .step-body h4 {
-      font-size: 0.9rem;
+      font-size: var(--text-body);
       font-weight: 700;
-      color: var(--dark);
+      color: var(--ink);
       margin-bottom: 6px;
     }
     .step-body p {
-      font-size: 0.82rem;
-      color: var(--gray);
+      font-size: var(--text-body);
+      color: var(--stone);
       line-height: 1.72;
     }
 
@@ -264,36 +147,33 @@
     .results-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
+      gap: var(--gap);
     }
     .result-card {
       background-color: var(--white);
-      border-radius: var(--r-md);
+      border-radius: var(--radius);
       padding: 1.4rem;
-      border: 1px solid var(--card-border);
-      border-left: 3px solid var(--accent);
-      transition: box-shadow .25s ease, transform .25s ease;
+      border: 1px solid var(--rule-soft);
+      border-left: 3px solid var(--rule);
+      transition: box-shadow .var(--dur-panel) var(--ease-out), transform .var(--dur-panel) var(--ease-out);
     }
-    .result-card:hover {
-      box-shadow: var(--shadow-sm);
-      transform: translateY(-2px);
-    }
+    
     .result-card h4 {
-      font-size: 0.85rem;
+      font-size: var(--text-body);
       font-weight: 700;
-      color: var(--dark);
+      color: var(--ink);
       margin-bottom: 6px;
     }
     .result-card p {
-      font-size: 0.8rem;
-      color: var(--gray);
+      font-size: var(--text-body);
+      color: var(--stone);
       line-height: 1.65;
     }
 
     /* ---- Compétences ---- */
     .skills-block {
-      background-color: var(--accent);
-      border-radius: var(--r-xl);
+      background-color: var(--ink);
+      border-radius: var(--radius-card);
       padding: 2.5rem;
     }
     .skills-block .section-label { color: rgba(255,255,255,0.85); }
@@ -302,59 +182,56 @@
     .skills-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
+      gap: var(--gap);
       margin-bottom: 1.5rem;
     }
     .skill-card {
       background-color: rgba(255,255,255,0.18);
-      border-radius: var(--r-md);
+      border-radius: var(--radius);
       padding: 1.25rem;
       border: 1px solid rgba(255,255,255,0.22);
     }
     .skill-name {
-      font-size: 0.9rem;
+      font-size: var(--text-body);
       font-weight: 800;
       color: var(--white);
       margin-bottom: 8px;
     }
     .skill-desc {
-      font-size: 0.78rem;
+      font-size: var(--text-body-sm);
       color: rgba(255,255,255,0.78);
       line-height: 1.65;
     }
     .progress-note {
       background-color: rgba(0,0,0,0.12);
-      border-radius: var(--r-md);
+      border-radius: var(--radius);
       padding: 1.25rem 1.5rem;
       border: 1px solid rgba(0,0,0,0.10);
-      font-size: 0.84rem;
+      font-size: var(--text-body);
       color: rgba(255,255,255,0.88);
       line-height: 1.75;
     }
     .progress-note strong { color: var(--white); font-weight: 700; }
 
-    /* ---- Back ---- */
-    .proj-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--gray);
-      text-decoration: none;
-      transition: color .2s;
-      padding: 10px 0;
-    }
-    .proj-back:hover { color: var(--accent); }
-
     /* ---- Responsive ---- */
     @media (max-width: 700px) {
-      .two-col { grid-template-columns: 1fr; }
       .results-grid { grid-template-columns: 1fr; }
       .skills-grid { grid-template-columns: 1fr; }
-      .key-numbers-inner { grid-template-columns: 1fr; gap: 1.25rem; }
+      .key-numbers-inner { grid-template-columns: 1fr; gap: var(--gap); }
       .steps::before { display: none; }
-      .skills-block { padding: 1.75rem; }
+      .skills-block { padding: 1.75rem; }}
+
+    /* Survol : réservé à la souris, sinon l'état reste collé au tap. */
+    @media (hover: hover) and (pointer: fine) {
+      .problem-card:hover {
+            border-color: var(--rule);
+            border-color: var(--rule-soft);
+          }
+      .step-body:hover { border-color: var(--rule); }
+      .result-card:hover {
+            border-color: var(--rule);
+            transform: translateY(-2px);
+          }
     }
   </style>
 </head>
@@ -418,21 +295,18 @@
           <div class="section-label">Problèmes identifiés</div>
           <div class="problem-list">
             <div class="problem-card">
-              <div class="problem-icon">📋</div>
               <div>
                 <h4>Suivi peu fiable</h4>
                 <p>Difficile de savoir ce qui avait été traité, ce qui compliquait la préparation des séances.</p>
               </div>
             </div>
             <div class="problem-card">
-              <div class="problem-icon">🔍</div>
               <div>
                 <h4>Informations dispersées</h4>
                 <p>Données réparties à différents endroits, nécessitant de nombreuses vérifications manuelles.</p>
               </div>
             </div>
             <div class="problem-card">
-              <div class="problem-icon">⏱</div>
               <div>
                 <h4>Ressaisie répétitive</h4>
                 <p>Organisation manuelle alors que Notion permettait d'automatiser une partie du travail.</p>
@@ -525,13 +399,16 @@
         </div>
       </div>
 
-      <!-- Retour -->
-      <!-- Preuves associées (injecté par buildPreuvesSection dans main.js) -->
-      <div id="preuves-mount" data-slug="boze" class="preuve-section reveal"></div>
-
-      <a href="index.html#proj-boze" class="proj-back">← Retour au portfolio</a>
-
     </div>
+  </div>
+
+  <!-- Preuves associées — sorties du flux de la colonne, en pleine largeur.
+       Le V1 les enfermait derrière une modale : 46 Mo de matière réelle que
+       personne n'ouvrait. -->
+  <section class="preuves" id="preuves" data-slug="boze"></section>
+
+  <div class="proj-outro">
+    <a href="index.html#proj-boze" class="proj-back">← Retour au portfolio</a>
   </div>
 
   <!-- FOOTER -->
@@ -560,12 +437,15 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA</span>
+      <span class="footer-copy">
+        © 2026 Timothé Flipo — Portfolio BUT GEA · Parcours GEMA
+        <a class="footer-legal" href="mentions-legales.html">Mentions légales &amp; données personnelles</a>
+      </span>
       <button type="button" class="footer-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Haut de page ↑</button>
     </div>
   </footer>
 
-  <script src="js/data.js?v=119"></script>
-  <script src="js/main.js?v=119"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/main.js?v=200"></script>
 </body>
 </html>
