@@ -57,6 +57,17 @@
      la lecture par la même valeur : un token plutôt que deux
      copies qui dériveraient l'une de l'autre.
   */
+  /*
+     Beige de section. Le noir réservé au fil du portfolio et au pied de
+     page : les trois parties projets ne sont pas des chapitres séparés
+     du site, la cassure du noir au blanc était trop franche pour elles.
+     Cette valeur est prise sur la teinte de l'accent, très désaturée et
+     très éclaircie — elle se lit comme du papier légèrement réchauffé.
+     Mesurée à 1,09 contre le fond : assez pour faire bande, pas assez
+     pour faire rupture. L'encre y tient 12:1.
+  */
+  --sand:       #f2e5dc;
+
   --night:      #23211d;
   --night-text: #d5d1c8;   /* texte courant sur fond sombre, 10,1:1 */
   --night-rule: rgba(255, 255, 255, 0.16);
@@ -846,8 +857,8 @@ p { margin: 0; }
    rupture — les trois parties se lisaient comme une seule liste.
 */
 .ts-band {
-  background-color: var(--night);
-  color: var(--night-text);
+  background-color: var(--sand);
+  color: var(--stone);
   padding: var(--section-gap) var(--gap-md);
 }
 /*
@@ -863,8 +874,8 @@ p { margin: 0; }
   gap: var(--gap-lg);
   align-items: end;
 }
-.ts-band .ts-title { color: var(--white); margin-bottom: 0; }
-.ts-band .ts-intro { color: var(--night-text); padding-bottom: 0.35em; }
+.ts-band .ts-title { color: var(--ink); margin-bottom: 0; }
+.ts-band .ts-intro { color: var(--stone); padding-bottom: 0.35em; }
 
 @media (max-width: 860px) {
   .ts-band-inner { grid-template-columns: 1fr; gap: var(--gap); align-items: start; }
@@ -894,9 +905,8 @@ p { margin: 0; }
   border-radius: var(--radius-sm);
   margin-bottom: var(--gap-sm);
 }
-/* Posée sur le sombre, la pastille reprend l'orange vif : 5,9:1 sur le
-   fond, et de l'encre par-dessus, mesurée 5,4:1. */
-.ts-band .ts-eyebrow { background-color: var(--accent); color: var(--ink); }
+/* Sur le beige, la pastille garde le traitement des fonds clairs :
+   orange plein, texte blanc, 4,63:1. */
 .ts-title {
   font-family: var(--font-display);
   font-weight: 600;
