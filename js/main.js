@@ -593,287 +593,288 @@ function buildCompetences(container) {
 // ============================================
 // FOND ANIMÉ — COURBES DE NIVEAU
 // ============================================
-// Des courbes de niveau, comme sur une carte topographique : des boucles
-// fermées et emboîtées. Un champ scalaire est construit à partir de
-// quinze sources, puis on en trace les lignes d'isovaleur par
-// « marching squares ».
+// Des courbes de niveau, comme sur une carte topographique. Un champ
+// scalaire est construit à partir de douze sources, puis on en trace les
+// lignes d'isovaleur par « marching squares ».
 //
-// Le point important est ailleurs, dans la manière dont ça bouge.
+// Ce sont les lignes elles-mêmes qui ondulent, sur place. Les sources
+// tournent chacune sur un petit cercle, et les courbes qui les
+// entourent roulent en conséquence — sans que le motif ne se déplace.
+// Une version précédente se contentait de translater l'image entière :
+// ça se voyait, et ça ne ressemblait pas à des vagues.
 //
-// La première version recalculait tout le relief à chaque image. Même
-// bridée à douze images par seconde — ce qui se voyait, et saccadait —
-// elle occupait le fil principal en permanence, celui-là même qui doit
-// répondre aux clics et au défilement.
+// Tout le calcul se fait dans un « worker », c'est-à-dire un fil
+// d'exécution séparé, et le canvas lui est transféré. Le fil principal —
+// celui qui répond aux clics et au défilement — n'en fait donc
+// strictement rien, quel que soit le nombre d'images par seconde.
 //
-// Ici le relief n'est calculé qu'UNE fois, dans un temps mort du
-// navigateur. Le mouvement est ensuite une simple translation CSS,
-// composée par le processeur graphique : le fil principal n'en fait
-// strictement rien. D'où une fluidité à soixante images par seconde et
-// des clics qui restent instantanés, quoi qu'il arrive.
-//
-// Le canvas déborde volontairement de sa section : la translation ne
-// peut donc jamais en découvrir le bord, et `overflow: hidden` sur la
-// section masque le reste.
-function initSectionCurves() {
-  const canvases = [...document.querySelectorAll('.fx-curves')];
-  if (!canvases.length) return;
+// C'est ce qui permet de rendre à la densité réelle de l'écran : les
+// traits sont nets, là où le rendu en pixels CSS les étalait et les
+// rendait flous sur un écran Retina.
 
-  const css = getComputedStyle(document.documentElement);
+// Le moteur est défini une seule fois et sérialisé vers le worker. Il ne
+// doit donc rien capturer de l'extérieur — d'où une fonction close.
+function curvesEngine() {
+  var CELL = 14;    // finesse de la grille, en pixels CSS
+  var LEVELS = 12;  // nombre de courbes de niveau
 
-  // Les traits reprennent l'accent et l'encre du site, jamais un gris
-  // arbitraire. Une ligne sur quatre passe à l'orange, comme les courbes
-  // maîtresses d'une vraie carte.
-  const rgba = (hex, a) => {
-    const h = hex.trim().replace('#', '');
-    const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
-    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
-  };
-  /*
-     Le canvas est rendu en pixels CSS, pas en pixels écran : sur un
-     Retina il est donc étiré d'un facteur deux, et un trait d'un pixel
-     s'étale sur deux en perdant la moitié de sa densité. C'est ce qui le
-     rendait presque invisible.
-
-     Le rendre à la densité de l'écran quadruplerait la mémoire du canvas
-     — une soixantaine de mégaoctets pour une décoration de fond. On
-     compense donc à l'encre : le trait reste doux, mais il pèse le même
-     poids à l'œil sur les deux types d'écran.
-  */
-  const soft = 0.55 + 0.45 * Math.min(window.devicePixelRatio || 1, 2);
-  const INK    = rgba(css.getPropertyValue('--ink')    || '#2b2723', 0.22 * soft);
-  const ACCENT = rgba(css.getPropertyValue('--accent') || '#ff6f3c', 0.40 * soft);
-
-  const CELL   = 11;   // finesse de la grille, en px : plus petit = plus lisse
-  const LEVELS = 16;   // nombre de courbes de niveau
-
-  // Quinze sources, petites et rapprochées. Six grosses bulles ne
-  // donnaient que de vastes arcs ; il faut beaucoup de maxima locaux pour
-  // obtenir le grain serré d'une vraie carte. Les amplitudes négatives
-  // creusent des cuvettes entre les reliefs.
-  const SOURCES = [
-    { x: 0.10, y: 0.18, r: 0.16, amp:  1.00 },
-    { x: 0.28, y: 0.09, r: 0.13, amp: -0.80 },
-    { x: 0.44, y: 0.22, r: 0.18, amp:  0.90 },
-    { x: 0.63, y: 0.11, r: 0.12, amp: -0.70 },
-    { x: 0.80, y: 0.26, r: 0.17, amp:  0.95 },
-    { x: 0.94, y: 0.08, r: 0.11, amp: -0.65 },
-    { x: 0.06, y: 0.48, r: 0.14, amp: -0.85 },
-    { x: 0.33, y: 0.55, r: 0.19, amp:  1.00 },
-    { x: 0.56, y: 0.44, r: 0.12, amp: -0.75 },
-    { x: 0.74, y: 0.58, r: 0.16, amp:  0.85 },
-    { x: 0.92, y: 0.47, r: 0.13, amp: -0.70 },
-    { x: 0.17, y: 0.82, r: 0.18, amp:  0.90 },
-    { x: 0.48, y: 0.88, r: 0.14, amp: -0.80 },
-    { x: 0.70, y: 0.92, r: 0.15, amp:  0.95 },
-    { x: 0.88, y: 0.79, r: 0.12, amp: -0.72 }
+  // Douze sources. Chacune tourne sur un petit cercle, à sa propre
+  // vitesse et dans son propre sens : c'est ce mouvement local qui fait
+  // rouler les courbes sur elles-mêmes. Les amplitudes négatives creusent
+  // des cuvettes entre les reliefs.
+  var SOURCES = [
+    { x: 0.12, y: 0.20, r: 0.17, amp:  1.00, orb: 0.045, sp:  0.00021, ph: 0.0 },
+    { x: 0.30, y: 0.09, r: 0.13, amp: -0.80, orb: 0.038, sp: -0.00029, ph: 0.8 },
+    { x: 0.47, y: 0.23, r: 0.19, amp:  0.90, orb: 0.052, sp:  0.00017, ph: 1.6 },
+    { x: 0.67, y: 0.12, r: 0.13, amp: -0.72, orb: 0.041, sp: -0.00024, ph: 2.3 },
+    { x: 0.85, y: 0.25, r: 0.17, amp:  0.95, orb: 0.047, sp:  0.00031, ph: 3.0 },
+    { x: 0.07, y: 0.50, r: 0.15, amp: -0.85, orb: 0.036, sp: -0.00019, ph: 3.7 },
+    { x: 0.34, y: 0.56, r: 0.20, amp:  1.00, orb: 0.055, sp:  0.00026, ph: 4.4 },
+    { x: 0.58, y: 0.45, r: 0.13, amp: -0.75, orb: 0.040, sp: -0.00033, ph: 5.1 },
+    { x: 0.79, y: 0.60, r: 0.17, amp:  0.88, orb: 0.049, sp:  0.00015, ph: 5.8 },
+    { x: 0.18, y: 0.83, r: 0.18, amp:  0.92, orb: 0.044, sp: -0.00027, ph: 0.5 },
+    { x: 0.50, y: 0.89, r: 0.15, amp: -0.80, orb: 0.037, sp:  0.00022, ph: 1.2 },
+    { x: 0.76, y: 0.91, r: 0.16, amp:  0.95, orb: 0.051, sp: -0.00018, ph: 1.9 }
   ];
 
-  // Champ scalaire : somme de retombées en 1/(1+d²), sans racine carrée.
-  // Il est rempli bande par bande : c'est la seule partie vraiment
-  // coûteuse, et d'un bloc elle dépassait les 50ms sur machine lente.
-  function sources(w, h) {
-    const ref = Math.min(w, h) || 1;
-    // Positions et rayons résolus une fois, pas par point de grille.
-    return SOURCES.map(s => {
-      const rr = s.r * ref;
-      return { px: s.x * w, py: s.y * h, inv: 1 / (rr * rr), amp: s.amp };
+  return function create(ctx, ink, accent) {
+    var w = 0, h = 0, cols = 0, rows = 0, grid = null, ref = 1;
+    var px = new Float64Array(SOURCES.length);
+    var py = new Float64Array(SOURCES.length);
+    var inv = new Float64Array(SOURCES.length);
+    var amp = new Float64Array(SOURCES.length);
+
+    function resize(nw, nh, dpr) {
+      w = nw; h = nh; ref = Math.min(w, h) || 1;
+      ctx.canvas.width  = Math.round(w * dpr);
+      ctx.canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 1;
+      cols = Math.ceil(w / CELL); rows = Math.ceil(h / CELL);
+      grid = new Float32Array((cols + 1) * (rows + 1));
+      for (var n = 0; n < SOURCES.length; n++) {
+        var rr = SOURCES[n].r * ref;
+        inv[n] = 1 / (rr * rr);
+        amp[n] = SOURCES[n].amp;
+      }
+    }
+
+    // Champ scalaire : somme de retombées en 1/(1+d²), sans racine carrée.
+    function field(t) {
+      var i, j, n, k = 0, min = Infinity, max = -Infinity;
+      for (n = 0; n < SOURCES.length; n++) {
+        var s = SOURCES[n], a = t * s.sp + s.ph, o = s.orb * ref;
+        px[n] = s.x * w + Math.cos(a) * o;
+        py[n] = s.y * h + Math.sin(a) * o;
+      }
+      for (j = 0; j <= rows; j++) {
+        var y = j * CELL;
+        for (i = 0; i <= cols; i++) {
+          var x = i * CELL, v = 0;
+          for (n = 0; n < SOURCES.length; n++) {
+            var dx = x - px[n], dy = y - py[n];
+            v += amp[n] / (1 + (dx * dx + dy * dy) * inv[n]);
+          }
+          grid[k++] = v;
+          if (v < min) min = v;
+          if (v > max) max = v;
+        }
+      }
+      return max - min > 1e-6 ? { min: min, span: max - min } : null;
+    }
+
+    // Marching squares : pour chaque cellule on regarde lesquels de ses
+    // quatre coins dépassent le seuil, et on relie les points interpolés
+    // sur les arêtes concernées.
+    function contour(level) {
+      var w1 = cols + 1;
+      for (var j = 0; j < rows; j++) {
+        var row = j * w1, next = row + w1, y = j * CELL;
+        for (var i = 0; i < cols; i++) {
+          var a = grid[row + i], b = grid[row + i + 1];
+          var c = grid[next + i + 1], d = grid[next + i];
+          var m = 0;
+          if (a > level) m |= 8;
+          if (b > level) m |= 4;
+          if (c > level) m |= 2;
+          if (d > level) m |= 1;
+          if (m === 0 || m === 15) continue;
+          var x = i * CELL;
+          var tx = x + CELL * (level - a) / (b - a);
+          var rx = x + CELL, ry = y + CELL * (level - b) / (c - b);
+          var bx = x + CELL * (level - d) / (c - d), by = y + CELL;
+          var ly = y + CELL * (level - a) / (d - a);
+          switch (m) {
+            case 1: case 14: ctx.moveTo(x, ly); ctx.lineTo(bx, by); break;
+            case 2: case 13: ctx.moveTo(bx, by); ctx.lineTo(rx, ry); break;
+            case 3: case 12: ctx.moveTo(x, ly); ctx.lineTo(rx, ry); break;
+            case 4: case 11: ctx.moveTo(tx, y); ctx.lineTo(rx, ry); break;
+            case 6: case 9:  ctx.moveTo(tx, y); ctx.lineTo(bx, by); break;
+            case 7: case 8:  ctx.moveTo(x, ly); ctx.lineTo(tx, y); break;
+            // Cas ambigus : deux courbes traversent la même cellule.
+            case 5:  ctx.moveTo(x, ly); ctx.lineTo(tx, y);
+                     ctx.moveTo(bx, by); ctx.lineTo(rx, ry); break;
+            case 10: ctx.moveTo(x, ly); ctx.lineTo(bx, by);
+                     ctx.moveTo(tx, y); ctx.lineTo(rx, ry); break;
+          }
+        }
+      }
+    }
+
+    function render(t) {
+      if (!grid) return;
+      var r = field(t);
+      ctx.clearRect(0, 0, w, h);
+      if (!r) return;
+      // Les niveaux sont regroupés par couleur : deux tracés au lieu de
+      // douze, donc douze fois moins de changements d'état du contexte.
+      for (var pass = 0; pass < 2; pass++) {
+        ctx.beginPath();
+        for (var n = 1; n <= LEVELS; n++) {
+          if ((n % 4 === 0) !== (pass === 1)) continue;
+          contour(r.min + r.span * (n / (LEVELS + 1)));
+        }
+        ctx.strokeStyle = pass === 1 ? accent : ink;
+        ctx.stroke();
+      }
+    }
+
+    return { resize: resize, render: render };
+  };
+}
+
+function initSectionCurves() {
+  var canvases = [].slice.call(document.querySelectorAll('.fx-curves'));
+  if (!canvases.length) return;
+
+  var css = getComputedStyle(document.documentElement);
+  var rgba = function (hex, a) {
+    var h = hex.trim().replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  };
+  // Les traits reprennent l'accent et l'encre du site. Une ligne sur
+  // quatre passe à l'orange, comme les courbes maîtresses d'une carte.
+  var INK    = rgba(css.getPropertyValue('--ink')    || '#2b2723', 0.13);
+  var ACCENT = rgba(css.getPropertyValue('--accent') || '#ff6f3c', 0.22);
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canWorker = typeof Worker !== 'undefined' &&
+    typeof OffscreenCanvas !== 'undefined' &&
+    typeof HTMLCanvasElement.prototype.transferControlToOffscreen === 'function';
+
+  /*
+     Repli : pas de worker disponible, ou le système demande moins
+     d'animation. On dessine alors une seule image, sur le fil principal,
+     et plus rien ne bouge.
+  */
+  if (!canWorker || reduce) {
+    var create = curvesEngine();
+    canvases.forEach(function (cv) {
+      var r = cv.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      var eng = create(cv.getContext('2d'), INK, ACCENT);
+      eng.resize(Math.round(r.width), Math.round(r.height), dpr);
+      eng.render(0);
+      cv.classList.add('is-ready');
     });
+    return;
   }
 
-  function fillBand(st, j0, j1) {
-    const { grid, cols, pts } = st;
-    for (let j = j0; j < j1; j++) {
-      const y = j * CELL;
-      let k = j * (cols + 1);
-      for (let i = 0; i <= cols; i++) {
-        const x = i * CELL;
-        let v = 0;
-        for (let n = 0; n < pts.length; n++) {
-          const p = pts[n];
-          const dx = x - p.px, dy = y - p.py;
-          v += p.amp / (1 + (dx * dx + dy * dy) * p.inv);
-        }
-        grid[k++] = v;
-        if (v < st.min) st.min = v;
-        if (v > st.max) st.max = v;
-      }
-    }
-  }
+  // Le moteur est évalué dans le worker, puis passé au pilote.
+  var src = 'var __create = (' + curvesEngine.toString() + ')();\n' +
+            WORKER_BOOTSTRAP + '(__create);';
+  var worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+  worker.onerror = function (e) {
+    // Si le worker tombe, on ne laisse pas trois canvas vides : le repli
+    // statique n'est plus possible (le canvas est transféré), mais on
+    // efface au moins la promesse d'un décor.
+    if (window.console) console.warn('fond animé désactivé :', e.message);
+    canvases.forEach(function (cv) { cv.classList.remove('is-ready'); });
+  };
 
-  // Marching squares : pour chaque cellule on regarde lesquels de ses
-  // quatre coins dépassent le seuil, et on relie les points interpolés
-  // sur les arêtes concernées. L'interpolation linéaire suffit à rendre
-  // le trait lisse dès lors que le champ l'est.
-  function contour(ctx, grid, cols, level, j0, j1) {
-    const idx = (i, j) => j * (cols + 1) + i;
-    for (let j = j0; j < j1; j++) {
-      for (let i = 0; i < cols; i++) {
-        const a = grid[idx(i, j)],         b = grid[idx(i + 1, j)];
-        const c = grid[idx(i + 1, j + 1)], d = grid[idx(i, j + 1)];
-        let m = 0;
-        if (a > level) m |= 8;
-        if (b > level) m |= 4;
-        if (c > level) m |= 2;
-        if (d > level) m |= 1;
-        if (m === 0 || m === 15) continue;
+  canvases.forEach(function (cv, id) {
+    var r = cv.getBoundingClientRect();
+    var off = cv.transferControlToOffscreen();
+    worker.postMessage({
+      type: 'init', id: id, canvas: off, ink: INK, accent: ACCENT,
+      w: Math.round(r.width), h: Math.round(r.height), dpr: dpr
+    }, [off]);
+    cv.classList.add('is-ready');
+  });
 
-        const x = i * CELL, y = j * CELL;
-        const T = () => [x + CELL * (level - a) / (b - a), y];
-        const R = () => [x + CELL, y + CELL * (level - b) / (c - b)];
-        const B = () => [x + CELL * (level - d) / (c - d), y + CELL];
-        const L = () => [x, y + CELL * (level - a) / (d - a)];
-        const seg = (p, q) => { ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); };
-
-        switch (m) {
-          case 1: case 14: seg(L(), B()); break;
-          case 2: case 13: seg(B(), R()); break;
-          case 3: case 12: seg(L(), R()); break;
-          case 4: case 11: seg(T(), R()); break;
-          case 6: case 9:  seg(T(), B()); break;
-          case 7: case 8:  seg(L(), T()); break;
-          // Cas ambigus : deux courbes traversent la même cellule.
-          case 5:  seg(L(), T()); seg(B(), R()); break;
-          case 10: seg(L(), B()); seg(T(), R()); break;
-        }
-      }
-    }
-  }
-
-  // Allocation seule : dimensionner le canvas et réserver la grille.
-  function alloc(cv) {
-    const r = cv.getBoundingClientRect();
-    const w = Math.round(r.width), h = Math.round(r.height);
-    if (!w || !h) return null;
-    // Un pixel par pixel CSS, même sur écran à haute densité : ce sont
-    // des traits très pâles sur un fond clair, le gain de finesse ne se
-    // verrait pas et coûterait quatre fois plus de mémoire.
-    cv.width = w; cv.height = h;
-    const ctx = cv.getContext('2d');
-    ctx.lineJoin = 'round';
-    ctx.lineCap  = 'round';
-    ctx.lineWidth = 1;
-    const cols = Math.ceil(w / CELL), rows = Math.ceil(h / CELL);
-    return {
-      ctx, cols, rows,
-      grid: new Float32Array((cols + 1) * (rows + 1)),
-      pts: sources(w, h),
-      min: Infinity, max: -Infinity, span: 0
-    };
-  }
-
-  // Un niveau est tracé en plusieurs passes de lignes. Le résultat est
-  // identique à un tracé d'un seul tenant — ce sont des segments
-  // indépendants — mais aucune passe ne monopolise le fil principal.
-  function drawLevel(st, n, j0, j1) {
-    st.ctx.beginPath();
-    contour(st.ctx, st.grid, st.cols, st.min + st.span * (n / (LEVELS + 1)), j0, j1);
-    st.ctx.strokeStyle = n % 4 === 0 ? ACCENT : INK;
-    st.ctx.stroke();
-  }
-
-  /*
-     Le tracé est découpé en petites tâches — la grille, puis les niveaux
-     deux par deux — et le navigateur en exécute autant qu'il peut dans
-     chacun de ses temps morts, sans jamais dépasser le budget qu'il
-     annonce.
-
-     Une première version tracait chaque canvas d'un bloc dans un
-     `requestIdleCallback` : sur un processeur bridé quatre fois, deux de
-     ces blocs dépassaient les 50ms et devenaient des « tâches longues »,
-     c'est-à-dire des instants où un clic aurait attendu. Découpé ainsi,
-     il n'y en a plus aucune.
-  */
-  const steps = [];
-  const BANDS = 8;         // découpe du calcul du champ
-  const LEVEL_CHUNKS = 3;  // découpe du tracé de chaque niveau
-  function enqueue(cv) {
-    let st = null;
-    steps.push(() => { st = alloc(cv); });
-    for (let n = 0; n < BANDS; n++) {
-      const band = n;
-      steps.push(() => {
-        if (!st) return;
-        // La grille compte rows+1 lignes de points ; la dernière bande
-        // va jusqu'au bout pour qu'aucune ligne ne reste à zéro.
-        const lines = st.rows + 1;
-        const from = Math.floor(lines * band / BANDS);
-        const to   = band === BANDS - 1 ? lines : Math.floor(lines * (band + 1) / BANDS);
-        fillBand(st, from, to);
-      });
-    }
-    steps.push(() => { if (st) st.span = st.max - st.min; });
-    // Un tiers de niveau par étape. Un niveau entier restait la plus
-    // grosse étape de la file — une douzaine de millisecondes, soit
-    // soixante-dix sur une machine six fois plus lente, donc au-dessus
-    // de la barre des cinquante.
-    for (let n = 1; n <= LEVELS; n++) {
-      for (let c = 0; c < LEVEL_CHUNKS; c++) {
-        const level = n, chunk = c;
-        steps.push(() => {
-          if (!st || st.span < 1e-6) return;
-          const from = Math.floor(st.rows * chunk / LEVEL_CHUNKS);
-          const to   = chunk === LEVEL_CHUNKS - 1 ? st.rows
-                     : Math.floor(st.rows * (chunk + 1) / LEVEL_CHUNKS);
-          drawLevel(st, level, from, to);
-        });
-      }
-    }
-    steps.push(() => { if (st) cv.classList.add('is-ready'); });
-  }
-
-  /*
-     `requestIdleCallback` n'existe pas partout — Safari ne l'a ajouté
-     qu'en version 17. La solution de repli doit donc annoncer un budget
-     plausible, et surtout la boucle ci-dessous ne doit jamais dépendre
-     de ce budget pour avancer.
-  */
-  const idle = window.requestIdleCallback ||
-    (fn => setTimeout(() => fn({ timeRemaining: () => 14 }), 16));
-
-  let draining = false;
-  function drain(deadline) {
-    /*
-       Au moins une étape par appel, quoi qu'annonce le budget, puis on
-       enchaîne tant qu'il reste de quoi en finir une autre.
-
-       Le `do…while` n'est pas un détail de style. Avec un `while`, une
-       implémentation qui annonce moins que le seuil ne franchissait
-       jamais la condition : la file se replanifiait indéfiniment sans
-       rien tracer, et l'effet restait invisible sur tout navigateur
-       dépourvu de `requestIdleCallback`. Le progrès ne doit jamais être
-       conditionné à une valeur qu'on ne contrôle pas.
-    */
-    do { steps.shift()(); } while (steps.length && deadline.timeRemaining() > 10);
-    if (steps.length) idle(drain);
-    else draining = false;
-  }
-  function schedule() {
-    if (draining || !steps.length) return;
-    draining = true;
-    idle(drain);
-  }
-
-  canvases.forEach(enqueue);
-  schedule();
-
-  // La translation est une animation CSS, donc composée hors du fil
-  // principal. Reste à l'interrompre quand la section n'est pas à
-  // l'écran : une animation qui tourne pour personne reste du travail.
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => e.target.classList.toggle('is-paused', !e.isIntersecting));
+  // Le worker ne dessine que ce qui est à l'écran.
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      worker.postMessage({ type: 'visible', id: canvases.indexOf(e.target), on: e.isIntersecting });
+    });
   }, { rootMargin: '150px 0px' });
-  canvases.forEach(cv => io.observe(cv));
+  canvases.forEach(function (cv) { io.observe(cv); });
 
-  let resizeTimer;
-  window.addEventListener('resize', () => {
+  document.addEventListener('visibilitychange', function () {
+    worker.postMessage({ type: 'hidden', on: document.hidden });
+  });
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      steps.length = 0;
-      canvases.forEach(cv => { cv.classList.remove('is-ready'); enqueue(cv); });
-      schedule();
+    resizeTimer = setTimeout(function () {
+      canvases.forEach(function (cv, id) {
+        var r = cv.getBoundingClientRect();
+        worker.postMessage({
+          type: 'resize', id: id,
+          w: Math.round(r.width), h: Math.round(r.height),
+          dpr: Math.min(window.devicePixelRatio || 1, 2)
+        });
+      });
     }, 200);
   }, { passive: true });
 }
+
+// Code exécuté dans le worker : il reçoit les canvas, les anime, et
+// s'arrête dès qu'aucun n'est visible.
+var WORKER_BOOTSTRAP = '(function (create) {\n' +
+'  var items = {}, hidden = false, timer = null;\n' +
+'  var FRAME = 1000 / 30;\n' +
+'  // Origine de temps. Passer Date.now() brut donnerait des angles de\n' +
+'  // plusieurs centaines de millions de radians : la précision des\n' +
+'  // flottants s\'y effondre et le mouvement se met à saccader.\n' +
+'  var T0 = Date.now();\n' +
+'  function now() { return Date.now() - T0; }\n' +
+'  function anyVisible() {\n' +
+'    for (var k in items) if (items[k].on) return true;\n' +
+'    return false;\n' +
+'  }\n' +
+'  function tick() {\n' +
+'    timer = null;\n' +
+'    if (hidden || !anyVisible()) return;\n' +
+'    var t = now();\n' +
+'    for (var k in items) if (items[k].on) items[k].eng.render(t);\n' +
+'    timer = setTimeout(tick, FRAME);\n' +
+'  }\n' +
+'  function start() { if (!timer && !hidden && anyVisible()) timer = setTimeout(tick, 0); }\n' +
+'  self.onmessage = function (e) {\n' +
+'    var d = e.data;\n' +
+'    if (d.type === "init") {\n' +
+'      var eng = create(d.canvas.getContext("2d"), d.ink, d.accent);\n' +
+'      eng.resize(d.w, d.h, d.dpr);\n' +
+'      eng.render(now());\n' +
+'      items[d.id] = { eng: eng, on: false };\n' +
+'    } else if (d.type === "visible") {\n' +
+'      if (items[d.id]) items[d.id].on = d.on;\n' +
+'      start();\n' +
+'    } else if (d.type === "hidden") {\n' +
+'      hidden = d.on; start();\n' +
+'    } else if (d.type === "resize") {\n' +
+'      if (items[d.id]) { items[d.id].eng.resize(d.w, d.h, d.dpr); items[d.id].eng.render(now()); }\n' +
+'      start();\n' +
+'    }\n' +
+'  };\n' +
+'})';
 
 // ============================================
 // SCROLL REVEAL (Intersection Observer)
