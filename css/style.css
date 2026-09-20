@@ -34,13 +34,23 @@
      comme ponctuation fonctionnelle — il marque ce qui compte (projet
      central, distinction, état courant), il ne décore jamais.
 
-     `--accent` est un aplat : le texte posé dessus est `--ink`, mesuré
-     à 5,4:1. `--accent-ink` est la seule valeur pour du texte accentué
-     sur fond clair, mesurée à 5,4:1 elle aussi.
+     Trois valeurs, trois rôles, et c'est le contraste qui les sépare :
+
+     `--accent` est l'orange vif. Il ne porte jamais de texte — points,
+     filets, contours, soulignés, survols. Du blanc dessus tomberait à
+     2,77:1, largement sous le seuil.
+
+     `--accent-solid` est le même orange assombri juste ce qu'il faut
+     pour qu'une capsule pleine porte du texte blanc : 4,63:1, conforme
+     AA y compris en petit corps.
+
+     `--accent-ink` est la seule valeur pour du texte accentué posé sur
+     fond clair : 5,4:1 sur le beige.
   */
-  --accent:     #ff6f3c;
-  --accent-ink: #a8431b;
-  --accent-wash: rgba(255, 111, 60, 0.10);
+  --accent:       #ff6f3c;
+  --accent-solid: #c94c1a;
+  --accent-ink:   #a8431b;
+  --accent-wash:  rgba(255, 111, 60, 0.10);
 
   /*
      Fond sombre. La section de rupture et le pied de page ferment
@@ -224,8 +234,7 @@ p { margin: 0; }
 .proj-eyebrow,
 .ts-eyebrow,
 .contact-label,
-.footer-col-title,
-.comp-num {
+.footer-col-title {
   display: block;
   font-family: var(--font-body);
   font-size: var(--text-caption);
@@ -789,8 +798,8 @@ p { margin: 0; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--ink);
-  background-color: var(--accent);
+  color: var(--white);
+  background-color: var(--accent-solid);
   padding: 3px 10px;
   border-radius: var(--radius-sm);
   margin-bottom: var(--gap-sm);
@@ -901,8 +910,8 @@ p { margin: 0; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--ink);
-  background-color: var(--accent);
+  color: var(--white);
+  background-color: var(--accent-solid);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
   margin-bottom: var(--gap-sm);
@@ -1615,10 +1624,10 @@ p { margin: 0; }
   background: var(--ink);
   color: var(--white);
 }
-/* Formation en cours : aplat orange, texte sombre, mesuré 5,4:1. */
+/* Formation en cours : aplat orange plein, texte blanc, mesuré 4,63:1. */
 .tl-chip--current {
-  background: var(--accent);
-  color: var(--ink);
+  background: var(--accent-solid);
+  color: var(--white);
 }
 .tl-chip--future {
   background: rgba(43, 39, 35, 0.05);
@@ -1631,7 +1640,7 @@ p { margin: 0; }
   border: 1px solid rgba(0,0,0,0.08);
 }
 .tl-chip--alternance {
-  background: var(--accent);
+  background: var(--accent-solid);
   color: var(--white);
 }
 
@@ -2027,8 +2036,8 @@ p { margin: 0; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--ink);
-  background-color: var(--accent);
+  color: var(--white);
+  background-color: var(--accent-solid);
   padding: 4px 0;
   border-radius: var(--radius-sm);
 }
@@ -2110,8 +2119,9 @@ p { margin: 0; }
   transition: background-color var(--dur-hover) ease, color var(--dur-hover) ease;
 }
 .comp-card-wrap.expanded .comp-level-badge {
-  background-color: var(--accent);
-  color: var(--ink);
+  background-color: var(--accent-solid);
+  border-color: var(--accent-solid);
+  color: var(--white);
 }
 /* Carte ouverte : le contour passe à l'orange, comme au survol. */
 .comp-card-wrap.expanded .comp-card { border-color: var(--accent); }
