@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet">
-  <link rel="icon" href="favicon.svg?v=207" type="image/svg+xml">
+  <link rel="icon" href="favicon.svg?v=208" type="image/svg+xml">
   <link rel="canonical" href="https://timotheflipo.github.io/portfolio-v2/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_FR">
@@ -24,7 +24,7 @@
   <!-- Sans JavaScript, les blocs animés à l'apparition doivent rester lisibles :
        la classe est posée avant le premier rendu, et c'est elle qui autorise le masquage. -->
   <script>document.documentElement.classList.add('js');</script>
-  <link rel="stylesheet" href="css/style.css?v=207">
+  <link rel="stylesheet" href="css/style.css?v=208">
 </head>
 <body>
 
@@ -98,32 +98,41 @@
        occupe toute la largeur de l'écran, au lieu de rester une image
        parmi d'autres dans un conteneur de 1200px.
        ========================================= -->
+  <!-- =========================================
+       SECTION 2 — MA MANIÈRE DE TRAVAILLER
+       Le titre, l'image et les quatre points s'empilaient sur toute la
+       hauteur d'un écran et demi, ce qui donnait à cette partie un poids
+       sans rapport avec son propos. Le texte est inchangé ; il est
+       simplement réparti sur deux colonnes.
+       ========================================= -->
   <section class="notion-section" id="notion">
-    <div class="notion-header reveal">
-      <h2 class="title-lg">
-        Avant de parler projets et compétences,<br>
-        découvrez ma manière de travailler
-      </h2>
-      <p class="lede">
-        Mon second cerveau Notion — un espace personnel pour organiser mes idées,
-        mes connaissances et mes projets.
-      </p>
-    </div>
+    <div class="notion-inner">
 
-    <figure class="notion-figure reveal">
-      <img src="images/notion_mockup.png"
-           alt="Vue du second cerveau Notion de Timothé Flipo"
-           class="notion-mockup-img"
-           width="1400" height="1197" loading="lazy" decoding="async">
-      <figcaption>L'espace Notion tel qu'il est organisé aujourd'hui.</figcaption>
-    </figure>
-
-    <!-- Bande sombre : elle ferme la partie « méthode » et sépare
-         nettement ce qui suit, qui parle des projets. -->
-    <div class="notion-blocks-band">
-      <div class="notion-blocks reveal" id="notion-blocks">
-        <!-- Injecté par buildNotionBlocks() dans main.js -->
+      <div class="notion-header reveal">
+        <h2 class="title-lg">
+          Avant de parler projets et compétences,<br>
+          découvrez ma manière de travailler
+        </h2>
+        <p class="lede">
+          Mon second cerveau Notion — un espace personnel pour organiser mes idées,
+          mes connaissances et mes projets.
+        </p>
       </div>
+
+      <div class="notion-body">
+        <figure class="notion-figure reveal-l">
+          <img src="images/notion_mockup.png"
+               alt="Vue du second cerveau Notion de Timothé Flipo"
+               class="notion-mockup-img"
+               width="1400" height="1197" loading="lazy" decoding="async">
+          <figcaption>L'espace Notion tel qu'il est organisé aujourd'hui.</figcaption>
+        </figure>
+
+        <div class="notion-blocks reveal-r" id="notion-blocks">
+          <!-- Injecté par buildNotionBlocks() dans main.js -->
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -136,10 +145,16 @@
   <!-- =========================================
        SECTION 6 — FAQ RECRUTEUR
        ========================================= -->
-  <section class="faq-section" id="faq">
-    <div class="faq-header reveal">
-      <h2 class="title-lg">Questions fréquentes</h2>
-      <p>Ce que vous voudriez peut-être savoir avant de me contacter.</p>
+  <section id="faq">
+    <!-- Bandeau sombre : la FAQ n'est pas une partie du portfolio, c'est
+         ce qui vient après. Elle reprend donc la valeur forte. -->
+    <div class="ts-band ts-band--dark">
+      <div class="ts-band-inner reveal">
+        <div class="ts-band-title">
+          <h2 class="ts-title">Questions fréquentes</h2>
+        </div>
+        <p class="ts-intro">Ce que vous voudriez peut-être savoir avant de me contacter.</p>
+      </div>
     </div>
     <div class="faq-list" id="faq-list">
       <!-- Injecté par buildFAQ() dans main.js -->
@@ -180,7 +195,7 @@
     </div>
   </footer>
 
-  <script src="js/data.js?v=207"></script>
-  <script src="js/main.js?v=207"></script>
+  <script src="js/data.js?v=208"></script>
+  <script src="js/main.js?v=208"></script>
 </body>
 </html>
