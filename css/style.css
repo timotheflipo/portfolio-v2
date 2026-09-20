@@ -574,7 +574,13 @@ p { margin: 0; }
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: url("../images/fond-hero.jpg") center / cover no-repeat;
+  /*
+     `center 30%` plutôt que `center` : l'image est en portrait, le hero
+     est large. Centrée, le cadrage tombait sur le visage, juste derrière
+     l'accroche. Remonté, ce sont les panneaux du second cerveau qui
+     encadrent le texte — ce qui est le sujet.
+  */
+  background: url("../images/fond-hero.jpg") center 30% / cover no-repeat;
   opacity: 0.15;
   /* Désaturée puis re-réchauffée : la photo prend la température du papier
      au lieu de poser une seconde palette sur la page. */
