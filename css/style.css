@@ -852,7 +852,27 @@ p { margin: 0; }
    SECTIONS THÉMATIQUES — DESIGN ÉDITORIAL
    ============================================ */
 
-.theme-section { overflow: visible; }
+/*
+   Le canvas est posé sous tout le reste de la section. Le bandeau de
+   titre étant opaque, les courbes n'apparaissent que dans la zone claire
+   des cartes — et derrière elles, puisque les cartes sont blanches.
+*/
+.theme-section { position: relative; isolation: isolate; overflow: hidden; }
+.theme-section > *:not(.fx-curves) { position: relative; z-index: 1; }
+.fx-curves {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /*
+     Le seul réglage d'intensité : 0 efface les courbes, 1 les rend
+     environ 60% plus présentes qu'ici. Les alphas des traits, dans
+     initSectionCurves(), sont calibrés pour cette valeur.
+  */
+  opacity: 0.62;
+}
 
 /*
    Bandeau de titre. Chaque partie s'ouvre dessus : c'est lui qui dit

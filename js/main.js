@@ -289,6 +289,9 @@ function buildThematiques(container) {
     else if (themeIdx === 1) section.innerHTML = buildS2HTML(theme, num, cards);
     else                     section.innerHTML = buildS3HTML(theme, num, cards);
 
+    // Fond animé, purement décoratif — voir initSectionCurves().
+    section.insertAdjacentHTML('afterbegin', '<canvas class="fx-curves" aria-hidden="true"></canvas>');
+
     container.appendChild(section);
   });
 
@@ -585,6 +588,119 @@ function buildCompetences(container) {
       if (!isExpanded) wrap.classList.add('expanded');
     });
   });
+}
+
+// ============================================
+// FOND ANIMÉ — COURBES DES SECTIONS PROJETS
+// ============================================
+// Quelques ondes très pâles qui dérivent lentement derrière les cartes.
+// Une animation en boucle est normalement proscrite ici : celle-ci ne
+// l'est qu'à trois conditions, toutes tenues plus bas.
+//   1. Elle ne porte aucune information et ne bouge rien à la lecture.
+//   2. Elle s'arrête dès que la section sort du cadre, et quand l'onglet
+//      passe en arrière-plan : aucune image calculée pour personne.
+//   3. Elle ne s'exécute pas du tout si le système demande moins
+//      d'animation — une image fixe est alors dessinée.
+function initSectionCurves() {
+  const canvases = [...document.querySelectorAll('.fx-curves')];
+  if (!canvases.length || !window.requestAnimationFrame) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const css = getComputedStyle(document.documentElement);
+
+  // Les traits reprennent l'accent du site plutôt qu'un gris arbitraire.
+  const rgb = (hex, a) => {
+    const h = hex.trim().replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+  };
+  const accent = css.getPropertyValue('--accent') || '#ff6f3c';
+  const ink    = css.getPropertyValue('--ink')    || '#2b2723';
+
+  // Six ondes : amplitude, longueur d'onde, vitesse et hauteur de repos.
+  // Les vitesses sont volontairement premières entre elles pour que le
+  // motif ne se répète pas à l'œil.
+  const WAVES = [
+    { y: 0.20, amp: 0.055, len: 1.5, speed: 0.011, color: rgb(ink,    0.16) },
+    { y: 0.34, amp: 0.075, len: 1.1, speed: 0.017, color: rgb(accent, 0.26) },
+    { y: 0.48, amp: 0.050, len: 1.9, speed: 0.008, color: rgb(ink,    0.14) },
+    { y: 0.62, amp: 0.085, len: 1.3, speed: 0.014, color: rgb(accent, 0.21) },
+    { y: 0.76, amp: 0.060, len: 0.9, speed: 0.020, color: rgb(ink,    0.16) },
+    { y: 0.88, amp: 0.045, len: 1.7, speed: 0.010, color: rgb(accent, 0.18) }
+  ];
+
+  const items = canvases.map(cv => ({ cv, ctx: cv.getContext('2d'), w: 0, h: 0, visible: false }));
+
+  function resize(it) {
+    const r = it.cv.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    it.w = r.width; it.h = r.height;
+    it.cv.width  = Math.round(r.width  * dpr);
+    it.cv.height = Math.round(r.height * dpr);
+    it.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function draw(it, t) {
+    const { ctx, w, h } = it;
+    if (!w || !h) return;
+    ctx.clearRect(0, 0, w, h);
+    ctx.lineWidth = 1.5;
+    for (const wv of WAVES) {
+      const base = h * wv.y;
+      const k = (Math.PI * 2) / (w * wv.len);
+      ctx.beginPath();
+      // Un point tous les 12px : au-delà la courbe reste lisse à l'œil
+      // et le coût de tracé chute d'autant.
+      for (let x = 0; x <= w + 12; x += 12) {
+        const phase = t * wv.speed;
+        const y = base
+          + Math.sin(x * k + phase) * h * wv.amp
+          + Math.sin(x * k * 2.3 - phase * 0.6) * h * wv.amp * 0.35;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = wv.color;
+      ctx.stroke();
+    }
+  }
+
+  // Une seule boucle pour les trois sections, et seulement si l'une
+  // d'elles est à l'écran.
+  let raf = null;
+  const tick = now => {
+    let any = false;
+    for (const it of items) {
+      if (!it.visible) continue;
+      any = true;
+      draw(it, now * 0.06);
+    }
+    raf = any && !document.hidden ? requestAnimationFrame(tick) : null;
+  };
+  const start = () => { if (!raf && !document.hidden) raf = requestAnimationFrame(tick); };
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const it = items.find(i => i.cv === e.target);
+      if (it) it.visible = e.isIntersecting;
+    });
+    if (!reduceMotion.matches) start();
+  }, { rootMargin: '120px 0px' });
+
+  items.forEach(it => { resize(it); draw(it, 0); io.observe(it.cv); });
+
+  // Repli sans animation : une seule image, dessinée une fois.
+  if (reduceMotion.matches) return;
+
+  document.addEventListener('visibilitychange', () => { document.hidden ? null : start(); });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      items.forEach(it => { resize(it); draw(it, performance.now() * 0.06); });
+    }, 150);
+  }, { passive: true });
+
+  start();
 }
 
 // ============================================
@@ -909,6 +1025,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const themeContainer = document.getElementById('themes-container');
   if (themeContainer) {
     buildThematiques(themeContainer);
+    initSectionCurves();
     setTimeout(initHashScroll, 80); // retour au niveau du projet via #proj-<slug>
   }
 
