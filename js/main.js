@@ -821,20 +821,29 @@ function initSectionCurves() {
     steps.push(() => { if (st) cv.classList.add('is-ready'); });
   }
 
+  /*
+     `requestIdleCallback` n'existe pas partout — Safari ne l'a ajouté
+     qu'en version 17. La solution de repli doit donc annoncer un budget
+     plausible, et surtout la boucle ci-dessous ne doit jamais dépendre
+     de ce budget pour avancer.
+  */
   const idle = window.requestIdleCallback ||
-    (fn => setTimeout(() => fn({ timeRemaining: () => 8 }), 1));
+    (fn => setTimeout(() => fn({ timeRemaining: () => 14 }), 16));
 
   let draining = false;
   function drain(deadline) {
     /*
-       On enchaîne les étapes tant qu'il reste confortablement de quoi en
-       finir une. La marge de 10ms couvre le dépassement possible : le
-       budget est vérifié AVANT l'étape, jamais pendant, donc une étape
-       trop grosse déborderait quoi qu'on fasse. C'est pour cette raison
-       que la file est découpée aussi finement — pas pour la beauté du
-       geste, mais pour que ce dépassement reste toujours négligeable.
+       Au moins une étape par appel, quoi qu'annonce le budget, puis on
+       enchaîne tant qu'il reste de quoi en finir une autre.
+
+       Le `do…while` n'est pas un détail de style. Avec un `while`, une
+       implémentation qui annonce moins que le seuil ne franchissait
+       jamais la condition : la file se replanifiait indéfiniment sans
+       rien tracer, et l'effet restait invisible sur tout navigateur
+       dépourvu de `requestIdleCallback`. Le progrès ne doit jamais être
+       conditionné à une valeur qu'on ne contrôle pas.
     */
-    while (steps.length && deadline.timeRemaining() > 10) steps.shift()();
+    do { steps.shift()(); } while (steps.length && deadline.timeRemaining() > 10);
     if (steps.length) idle(drain);
     else draining = false;
   }
