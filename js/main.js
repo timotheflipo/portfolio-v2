@@ -445,6 +445,8 @@ function buildTimeline(container) {
     central:   'tl-chip--central',
     future:    'tl-chip--future'
   };
+  // La formation en cours porte la seule capsule pleine de la page.
+  const chipFor = n => n.current ? 'tl-chip--current' : chipClass[n.kind];
 
   const html = timelineItems.map((node) => {
     const groupHTML = node.group ? `
@@ -462,7 +464,7 @@ function buildTimeline(container) {
         <div class="tl-rail"><span class="tl-dot"></span></div>
         <div class="tl-body">
           <article class="tl-card ${node.kind === 'central' ? 'tl-card--central' : ''}">
-            <span class="tl-chip ${chipClass[node.kind]}">${node.chip}</span>
+            <span class="tl-chip ${chipFor(node)}">${node.chip}</span>
             <h3>${node.title}</h3>
             <div class="tl-meta">${node.org}</div>
             <p>${node.description}</p>
@@ -595,13 +597,15 @@ function buildCompetences(container) {
     wrap.innerHTML = `
       <div class="comp-card reveal" data-id="${comp.id}">
         <div class="comp-content">
-          <div class="comp-num">Compétence ${comp.number}</div>
-          <div class="comp-name">${comp.name}</div>
-          <div class="comp-level-badge">${comp.levelAchieved}</div>
-          <div class="comp-desc"><span class="comp-desc-inner">${comp.levelDesc}</span></div>
-          <div class="comp-cta">
-            <span>Voir les apprentissages</span>
-            <span>→</span>
+          <span class="comp-num"><span class="sr-only">Compétence </span>${comp.number}</span>
+          <div class="comp-body">
+            <h3 class="comp-name">${comp.name}</h3>
+            <span class="comp-level-badge">${comp.levelAchieved}</span>
+            <div class="comp-desc"><span class="comp-desc-inner">${comp.levelDesc}</span></div>
+            <div class="comp-cta">
+              <span>Voir les apprentissages</span>
+              <span aria-hidden="true">→</span>
+            </div>
           </div>
         </div>
         <div class="comp-projects" id="proj-${comp.id}">
@@ -621,63 +625,6 @@ function buildCompetences(container) {
       if (!isExpanded) wrap.classList.add('expanded');
     });
   });
-}
-
-// ============================================
-// HERO PARALLAX — lignes du titre au scroll
-// ============================================
-function initHeroParallax() {
-  // Respect de la préférence système "réduire les animations"
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const line1 = document.querySelector('.hero-line-1');
-  const line2 = document.querySelector('.hero-line-2');
-  const hero  = document.querySelector('.hero');
-  if (!line1 || !line2 || !hero) return;
-
-  let ticking = false;
-
-  function update() {
-    const scrollY   = window.scrollY;
-    const heroH     = hero.offsetHeight;
-
-    // progress : 0 en haut → 1 quand le scroll dépasse 60 % de la hauteur du hero
-    const raw      = scrollY / (heroH * 1.0);
-    const progress = Math.min(Math.max(raw, 0), 1);
-
-    // Le V1 poussait les lignes à ±110vw : le titre sortait entièrement du
-    // cadre au premier défilement. C'est un effet de bande-annonce, il
-    // n'aide pas à lire. Réduit à une dérive de 12vw, qui accompagne le
-    // défilement sans emporter le texte.
-    const isMobile = window.innerWidth < 600;
-    const maxVw    = isMobile ? 6 : 12;
-
-    const offset = progress * maxVw;
-
-    line1.style.transform = `translateX(${offset}vw)`;
-    line2.style.transform = `translateX(-${offset}vw)`;
-
-    ticking = false;
-  }
-
-  // Scroll — passive pour ne pas bloquer le thread principal
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  }, { passive: true });
-
-  // Recalcul si la fenêtre est redimensionnée
-  window.addEventListener('resize', () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  }, { passive: true });
-
-  // Appel initial (au cas où la page est déjà scrollée au chargement)
-  update();
 }
 
 // ============================================
@@ -997,7 +944,6 @@ function initContactForm() {
 document.addEventListener('DOMContentLoaded', () => {
   buildNav();
   initPageTransition();
-  initHeroParallax();
 
   // Index
   const themeContainer = document.getElementById('themes-container');

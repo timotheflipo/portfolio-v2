@@ -29,13 +29,18 @@
   --rule-soft:  #dedbd4;   /* filet purement décoratif, sans rôle */
 
   /*
-     Accent unique. `--accent` est un aplat et un marqueur (3,7:1
-     sur beige, conforme pour du non-textuel) ; `--accent-ink` est
-     la seule valeur autorisée dès qu'il s'agit de texte (5,4:1).
+     Accent unique, et vif. Le V2 l'avait tellement assourdi que le site
+     était devenu noir et blanc. Il revient à l'orange d'origine, mais
+     comme ponctuation fonctionnelle — il marque ce qui compte (projet
+     central, distinction, état courant), il ne décore jamais.
+
+     `--accent` est un aplat : le texte posé dessus est `--ink`, mesuré
+     à 5,4:1. `--accent-ink` est la seule valeur pour du texte accentué
+     sur fond clair, mesurée à 5,4:1 elle aussi.
   */
-  --accent:     #d2551f;
+  --accent:     #ff6f3c;
   --accent-ink: #a8431b;
-  --accent-wash: rgba(210, 85, 31, 0.07);
+  --accent-wash: rgba(255, 111, 60, 0.10);
 
   /*
      Fond sombre. La section de rupture et le pied de page ferment
@@ -85,9 +90,9 @@
      Un seul token pilule, là où le V1 mélangeait 50px, 99px et 999px
      sur 22 déclarations. Et des rayons courts : les angles très
      arrondis sont l'un des marqueurs à éviter. */
-  --radius-sm:   6px;
-  --radius:      10px;
-  --radius-card: 14px;
+  --radius-sm:   8px;   /* capsules, badges */
+  --radius:      12px;  /* boutons, champs, petits blocs */
+  --radius-card: 20px;  /* cartes et grandes surfaces */
   --radius-pill: 9999px;
 
   /* ---------- Profondeur ----------
@@ -156,6 +161,17 @@ ul { list-style: none; }
 
 :focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
 
+/* Lu par les lecteurs d'écran, invisible à l'œil : « 01 » seul ne veut rien dire. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /*
    L'interlettrage dépend de la taille : plus les lettres grossissent,
    plus l'espace optique entre elles paraît large. Une valeur unique
@@ -205,7 +221,6 @@ p { margin: 0; }
    anciens noms aliasent.
 */
 .eyebrow,
-.section-label,
 .proj-eyebrow,
 .ts-eyebrow,
 .contact-label,
@@ -220,7 +235,28 @@ p { margin: 0; }
   color: var(--stone);
   margin: 0 0 var(--gap-sm);
 }
-.eyebrow--accent { color: var(--stone); }
+.eyebrow--accent,
+.section-label,
+.proj-eyebrow,
+.skill-light-name,
+.preuve-comp { color: var(--accent-ink); }
+
+/*
+   Les micro-labels de section reprennent la forme commune, mais la
+   couleur d'accent : ce sont eux qui découpent la lecture d'une page
+   projet, ils doivent se repérer d'un coup d'œil.
+*/
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 var(--gap-sm);
+}
 
 /*
    Chapeau. Deux crans au-dessus du corps et dans la couleur du texte
@@ -516,17 +552,19 @@ p { margin: 0; }
    ============================================ */
 .hero {
   background-color: var(--paper);
-  padding: calc(var(--header-h) + var(--section-gap)) var(--gap-md) var(--section-gap);
+  padding: calc(var(--header-h) + var(--gap-lg)) var(--gap-md) var(--gap-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - var(--header-h));
 }
 .hero-inner {
-  max-width: var(--page-max);
+  max-width: 1000px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: var(--gap-lg);
-  align-items: start;
+  text-align: center;
 }
-.hero-eyebrow, .hero-main .eyebrow {
+.hero-eyebrow {
+  color: var(--accent-ink);
   opacity: 0;
   animation: fadeUp var(--dur-reveal) var(--ease-out) 44ms forwards;
 }
@@ -534,8 +572,8 @@ p { margin: 0; }
 /*
    Le V1 posait le titre en `clamp(1rem, 4.2vw, 4.25rem)` : sur un écran
    de 375px la borne basse l'emportait et l'accroche s'affichait à 16px,
-   exactement la taille du corps de texte. Aucune règle responsive ne
-   rattrapait le cas. L'échelle nommée règle le problème par construction.
+   exactement la taille du corps de texte. L'échelle nommée règle le
+   problème par construction.
 */
 .hero-title {
   font-family: var(--font-display);
@@ -544,115 +582,49 @@ p { margin: 0; }
   line-height: 1.08;
   letter-spacing: -0.025em;
   color: var(--ink);
-  margin-bottom: var(--gap);
+  margin-bottom: var(--gap-md);
+  text-wrap: balance;
   opacity: 0;
   animation: fadeUp var(--dur-reveal) var(--ease-out) 88ms forwards;
 }
-.hero-line { display: block; will-change: transform; }
+/*
+   Les deux lignes ne glissent plus au défilement. La parallaxe à ±110vw
+   du V1 sortait le titre du cadre ; réduite, elle n'apportait plus rien
+   dans une composition centrée.
+*/
+.hero-line { display: block; }
 .hero-line-2 { color: var(--stone); }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-line { will-change: auto; transform: none !important; }
-}
-
-.hero-lede {
-  font-size: var(--text-subheading);
-  line-height: 1.6;
-  letter-spacing: -0.003em;
-  color: var(--stone);
-  max-width: 34em;
-  margin-bottom: var(--gap-md);
-  opacity: 0;
-  animation: fadeUp var(--dur-reveal) var(--ease-out) 132ms forwards;
-}
 .hero-cta {
   display: flex;
   gap: var(--gap-sm);
   flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp var(--dur-reveal) var(--ease-out) 132ms forwards;
+}
+
+/* Frise de parcours : trois repères, la position actuelle en orange. */
+.hero-timeline {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-md);
+  max-width: var(--page-max);
+  width: 100%;
+  margin: var(--section-gap) auto 0;
   opacity: 0;
   animation: fadeUp var(--dur-reveal) var(--ease-out) 176ms forwards;
 }
-
-/*
-   Fiche de lecture rapide. Les quatre réponses viennent de la FAQ, qui
-   se trouvait en bas de page : un recruteur ne descendait jamais
-   jusqu'à elles.
-*/
-.hero-facts {
-  border-top: 2px solid var(--ink);
-  padding-top: var(--gap);
-  opacity: 0;
-  animation: fadeUp var(--dur-reveal) var(--ease-out) 220ms forwards;
-}
-.hero-facts-list { display: flex; flex-direction: column; }
-.hero-fact {
-  display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: var(--gap-sm);
-  padding: var(--gap-sm) 0;
-  border-bottom: 1px solid var(--rule-soft);
-}
-.hero-fact dt {
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ash);
-  padding-top: 2px;
-}
-.hero-fact dd { font-size: var(--text-body-sm); line-height: 1.55; color: var(--ink); }
-
-/* La preuve cliquable, à portée immédiate. */
-.hero-proof {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: var(--gap-sm);
-  margin-top: var(--gap);
-  padding: var(--gap-sm) var(--gap);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  transition: background-color var(--dur-hover) ease, border-color var(--dur-hover) ease;
-}
-.hero-proof-label {
-  grid-column: 1;
-  font-size: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent-ink);
-}
-.hero-proof-title {
-  grid-column: 1;
-  font-family: var(--font-display);
-  font-size: var(--text-subheading);
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-.hero-proof-arrow { grid-column: 2; grid-row: 1 / span 2; font-size: var(--text-heading-sm); color: var(--stone); }
-
-/* Mini-timeline horizontale */
-.hero-timeline {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  max-width: var(--page-max);
-  margin: var(--section-gap) auto 0;
-  padding-top: var(--gap);
-  border-top: 1px solid var(--rule-soft);
-  opacity: 0;
-  animation: fadeUp var(--dur-reveal) var(--ease-out) 264ms forwards;
-}
 .htl-item {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--gap-xs);
-  padding-right: var(--gap);
+  padding-top: var(--gap-sm);
+  border-top: 1px solid var(--rule-soft);
   min-width: 0;
 }
+.htl-item[data-status="current"] { border-top-color: var(--accent); }
 .htl-sep { display: none; }
 .htl-dot {
   width: 9px;
@@ -663,10 +635,9 @@ p { margin: 0; }
 }
 
 /*
-   Statuts des points. Le V1 faisait pulser le point « en cours » et
-   tourner un spinner bleu sur le point « à venir » : c'est le
-   vocabulaire d'un tableau de bord système, hors sujet sur une frise
-   de parcours. La couleur et le remplissage suffisent.
+   Statuts. Le V1 faisait pulser le point « en cours » et tourner un
+   spinner bleu sur le point « à venir » : le vocabulaire d'un tableau
+   de bord système, hors sujet sur une frise de parcours.
 */
 .htl-item[data-status="past"] .htl-dot    { background-color: var(--rule); }
 .htl-item[data-status="current"] .htl-dot { background-color: var(--accent); }
@@ -683,37 +654,12 @@ p { margin: 0; }
   font-variant-numeric: tabular-nums;
   color: var(--ink);
 }
+.htl-item[data-status="current"] .htl-years { color: var(--accent-ink); }
 .htl-label { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.45; }
 
-/*
-   Indice de défilement. Le V1 faisait osciller le trait et le chevron
-   en boucle toutes les deux secondes — une animation permanente, que
-   les recommandations d'accessibilité déconseillent explicitement.
-*/
-.scroll-hint {
-  max-width: var(--page-max);
-  margin: var(--gap-md) auto 0;
-  display: flex;
-  align-items: center;
-  gap: var(--gap-sm);
-  color: var(--ash);
-  font-size: var(--text-caption);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 700;
-  opacity: 0;
-  animation: fadeUp var(--dur-reveal) var(--ease-out) 308ms forwards;
-  transition: color var(--dur-hover) ease;
-  cursor: default;
-}
-.scroll-line { width: 28px; height: 1px; background: var(--rule); flex-shrink: 0; }
-.scroll-chevron { width: 12px; height: 7px; opacity: 0.6; transition: opacity var(--dur-hover) ease; }
-
-@media (max-width: 900px) {
-  .hero-inner { grid-template-columns: 1fr; gap: var(--gap-md); }
-  .hero-timeline { flex-direction: column; gap: var(--gap); }
-  .htl-item { flex-direction: row; align-items: baseline; gap: var(--gap-sm); padding-right: 0; }
-  .htl-dot { align-self: center; }
+@media (max-width: 760px) {
+  .hero { min-height: 0; }
+  .hero-timeline { grid-template-columns: 1fr; gap: var(--gap); }
 }
 
 /* ============================================
@@ -827,23 +773,27 @@ p { margin: 0; }
 }
 
 /* ---- Éléments partagés ---- */
+/*
+   Le numéro de section était un micro-label gris parmi six autres.
+   Il devient une pastille orange : c'est le repère qui dit où on en
+   est dans les trois thématiques.
+*/
 .ts-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: var(--gap-sm);
-  font-size: var(--text-caption);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--stone);
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-.ts-eyebrow::after {
-  content: '';
-  width: 20px; height: 1px;
-  background-color: var(--ink);
-  opacity: 0.4;
-  flex-shrink: 0;
+  justify-content: center;
+  min-width: 34px;
+  font-family: var(--font-display);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  background-color: var(--accent);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--gap-sm);
 }
 .ts-title {
   font-family: var(--font-display);
@@ -914,16 +864,23 @@ p { margin: 0; }
 /* Fond blanc franc. Le contour orange glowing est dessiné par un ::before
    masqué (technique mask-composite) : seul l'anneau de bordure est visible,
    et une bande lumineuse y glisse en continu. */
+/*
+   Carte « projet central ». Elle n'avait aucune propriété `border` :
+   la règle de survol qui changeait `border-color` ne pouvait donc rien
+   peindre, et les projets centraux réagissaient moins que les cartes
+   secondaires — exactement l'inverse de ce qu'il fallait. Le contour
+   existe maintenant au repos, et il passe à l'orange au survol.
+*/
 .proj-card-featured {
   display: block;
   position: relative;
   text-decoration: none;
   background-color: var(--white);
+  border: 1px solid var(--rule-soft);
   border-radius: var(--radius-card);
-  padding: 2rem 2.5rem;
-  box-shadow: var(--shadow);
+  padding: var(--gap-md);
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
+  transition: border-color var(--dur-hover) ease, box-shadow var(--dur-hover) ease;
 }
 /*
    Le V1 faisait glisser en boucle une bande lumineuse dans le contour
@@ -932,24 +889,23 @@ p { margin: 0; }
    « généré » le plus visible du site. Ce qui distingue une carte
    centrale, désormais : un filet accentué, immobile.
 */
+/*
+   Aplat orange à texte sombre : 5,4:1, et l'orange se voit enfin.
+   C'est le seul badge plein de l'accueil — il dit lequel des projets
+   d'une section est le projet central.
+*/
 .pcf-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--gap-xs);
   font-size: var(--text-caption);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--accent-ink);
-  margin-bottom: var(--gap-sm);
-}
-.pcf-badge::before {
-  content: '';
-  display: block;
-  width: 14px;
-  height: 2px;
+  letter-spacing: 0.1em;
+  color: var(--ink);
   background-color: var(--accent);
-  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--gap-sm);
 }
 .pcf-top {
   display: flex;
@@ -1052,33 +1008,44 @@ p { margin: 0; }
   transition: transform 300ms var(--ease-out), opacity 300ms ease;
 }
 
+/*
+   Le voile du V1 s'arrêtait à mi-hauteur : les capsules et le badge
+   posés en haut du bloc de texte retombaient sur la partie claire de
+   la photo. Il couvre maintenant toute la zone de texte.
+*/
 .pcf-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(47,39,35,0.9) 0%, rgba(47,39,35,0.2) 55%, transparent 100%);
+  background: linear-gradient(to top,
+    rgba(28, 25, 22, 0.94) 0%,
+    rgba(28, 25, 22, 0.82) 38%,
+    rgba(28, 25, 22, 0.35) 68%,
+    rgba(28, 25, 22, 0.05) 100%);
 }
-.pcf-img-body { position: relative; z-index: 1; padding: 2rem 2.25rem; }
+.pcf-img-body { position: relative; z-index: 1; padding: var(--gap-md); }
 .pcf-awards { display: flex; flex-wrap: wrap; gap: var(--gap-xs); margin-bottom: 0.75rem; }
+/* Deux prix réellement obtenus : contour orange, comme les autres
+   marqueurs de distinction du site. */
 .pcf-award {
   display: inline-flex;
   align-items: center;
-  gap: var(--gap-xs);
   padding: 3px 10px;
   border-radius: var(--radius-pill);
   font-size: var(--text-caption);
   font-weight: 700;
-  background-color: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.15);
+  letter-spacing: 0.04em;
+  background-color: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
 }
 .proj-card-featured.img-card .pcf-top h3 { color: var(--white); }
-.proj-card-featured.img-card p { color: rgba(255,255,255,0.62); margin-bottom: 1.25rem; }
-.proj-card-featured.img-card .pcf-arrow { color: rgba(255,255,255,0.35); }
+.proj-card-featured.img-card p { color: rgba(255,255,255,0.78); margin-bottom: var(--gap); }
+.proj-card-featured.img-card .pcf-arrow { color: rgba(255,255,255,0.6); }
 
 .proj-card-featured.img-card .proj-tag {
   background-color: transparent;
-  color: rgba(255,255,255,0.65);
-  border-color: rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.8);
+  border-color: rgba(255,255,255,0.4);
 }
 
 
@@ -1091,14 +1058,13 @@ p { margin: 0; }
 
 .proj-card {
   background-color: var(--white);
+  border: 1px solid var(--rule-soft);
   border-radius: var(--radius-card);
-  padding: 1.4rem 1.6rem;
+  padding: var(--gap);
   cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: box-shadow 0.3s ease;
   text-decoration: none;
   display: block;
-  border: 1px solid var(--rule-soft);
+  transition: border-color var(--dur-hover) ease;
 }
 
 .proj-card-top {
@@ -1649,6 +1615,11 @@ p { margin: 0; }
   background: var(--ink);
   color: var(--white);
 }
+/* Formation en cours : aplat orange, texte sombre, mesuré 5,4:1. */
+.tl-chip--current {
+  background: var(--accent);
+  color: var(--ink);
+}
 .tl-chip--future {
   background: rgba(43, 39, 35, 0.05);
   color: var(--ink);
@@ -2033,26 +2004,42 @@ p { margin: 0; }
 
 .comp-content {
   position: relative;
-  min-height: 160px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 1.5rem 2rem 1.5rem 2.4rem;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: var(--gap);
+  align-items: start;
+  padding: var(--gap-md);
 }
+.comp-body { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+/*
+   Le numéro devient une pastille orange, comme les numéros de section
+   de l'accueil : c'est le même repère, il doit se lire pareil. Le V2
+   l'avait réduit à un micro-label gris parmi six autres.
+*/
 .comp-num {
-  font-size: var(--text-caption);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ash);
-  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  font-family: var(--font-display);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  background-color: var(--accent);
+  padding: 4px 0;
+  border-radius: var(--radius-sm);
 }
 .comp-name {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 600;
   font-size: var(--text-heading);
+  letter-spacing: -0.018em;
   color: var(--ink);
-  margin-bottom: 8px;
-  line-height: 1.1;
+  margin-bottom: var(--gap-xs);
+  line-height: 1.15;
 }
 /*
    `max-height` déclenchait un calcul de mise en page à chaque image, et
@@ -2063,9 +2050,9 @@ p { margin: 0; }
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  margin-bottom: var(--gap);
   transition: grid-template-rows var(--dur-panel) var(--ease-out),
-              opacity var(--dur-panel) ease;
+              opacity var(--dur-panel) ease,
+              margin-bottom var(--dur-panel) var(--ease-out);
 }
 .comp-desc-inner {
   overflow: hidden;
@@ -2074,7 +2061,7 @@ p { margin: 0; }
   color: var(--stone);
   line-height: 1.6;
 }
-.comp-card-wrap.expanded .comp-desc { grid-template-rows: 1fr; opacity: 1; }
+.comp-card-wrap.expanded .comp-desc { grid-template-rows: 1fr; opacity: 1; margin-bottom: var(--gap); }
 .comp-cta {
   display: flex;
   align-items: center;
@@ -2101,22 +2088,34 @@ p { margin: 0; }
 }
 .comp-projects-inner > .comp-niveaux { padding: var(--gap) var(--gap-md) var(--gap-md); }
 
-/* Badge "Niveau X atteint" dans l'en-tête de la carte */
+/*
+   « Niveau 3/3 atteint » est un résultat, pas une étiquette de plus :
+   il est traité comme un badge de crédit, contour orange et texte
+   accentué, et il devient plein quand la carte est ouverte.
+*/
 .comp-level-badge {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   background: transparent;
-  color: var(--ash);
+  color: var(--accent-ink);
   font-size: var(--text-caption);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 10px;
   border-radius: var(--radius-pill);
-  margin-bottom: 0.45rem;
-  border: 1px solid var(--rule-soft);
-  align-self: flex-start;
+  margin-bottom: var(--gap-sm);
+  border: 1px solid var(--accent);
+  transition: background-color var(--dur-hover) ease, color var(--dur-hover) ease;
 }
+.comp-card-wrap.expanded .comp-level-badge {
+  background-color: var(--accent);
+  color: var(--ink);
+}
+/* Carte ouverte : le contour passe à l'orange, comme au survol. */
+.comp-card-wrap.expanded .comp-card { border-color: var(--accent); }
+.comp-card-wrap.expanded .comp-cta { color: var(--accent-ink); gap: var(--gap-sm); }
 
 /* Conteneur des niveaux */
 .comp-niveaux { display: flex; flex-direction: column; gap: var(--gap); }
@@ -2135,15 +2134,15 @@ p { margin: 0; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: var(--ink);
   white-space: nowrap;
-  background: var(--paper);
-  color: var(--stone);
-  padding: 2px 8px;
+  color: var(--accent-ink);
+  background: var(--accent-wash);
+  border: 1px solid var(--accent);
+  padding: 2px 9px;
   border-radius: var(--radius-pill);
 }
 .comp-niveau-title {
-  font-size: var(--text-body);
+  font-size: var(--text-prose);
   font-weight: 700;
   color: var(--ink);
 }
@@ -2873,7 +2872,7 @@ p { margin: 0; }
   color: var(--accent-ink);
 }
 .proj-preuves-arrow { transition: transform var(--dur-hover) var(--ease-out); }
-.proj-card-featured.img-card .proj-preuves { color: rgba(255,255,255,0.72); }
+.proj-card-featured.img-card .proj-preuves { color: var(--accent); }
 
 /* --- Section preuves d'une page projet --- */
 .preuves {
@@ -3145,8 +3144,8 @@ p { margin: 0; }
   content: '';
   flex: 1;
   max-width: 48px;
-  height: 1px;
-  background-color: var(--rule-soft);
+  height: 1.5px;
+  background-color: var(--accent);
 }
 .section-title {
   font-family: var(--font-display);
@@ -3251,8 +3250,6 @@ p { margin: 0; }
   .burger-btn:hover { border-color: var(--rule); }
   .nav-link:hover { background-color: var(--paper); color: var(--ink); }
   .nav-inline a:hover { color: var(--ink); }
-  .scroll-hint:hover { color: var(--ink); }
-  .scroll-hint:hover .scroll-chevron { opacity: 0.9; }
 
   /* Boutons — le seul endroit où l'accent prend toute la surface */
   .btn-dark:hover { background-color: var(--accent-ink); }
@@ -3266,26 +3263,34 @@ p { margin: 0; }
   */
   .proj-card-wrap:hover { transform: translateY(-2px); }
   .proj-card-wrap:hover .proj-card,
-  .proj-card-wrap:hover .proj-card-featured { border-color: var(--rule); }
+  .proj-card-wrap:hover .proj-card-featured { border-color: var(--accent); }
   .proj-card-wrap:hover .proj-arrow,
-  .proj-card-featured:hover .pcf-arrow { transform: translate(2px, -2px); color: var(--accent-ink); }
+  .proj-card-wrap:hover .pcf-arrow { transform: translate(2px, -2px); color: var(--accent-ink); }
   .proj-card-featured.img-card:hover .pcf-bg { transform: scale(1.03); opacity: 0.82; }
   .proj-card-featured.img-card:hover .pcf-arrow { color: var(--white); }
-  .proj-tag-clickable:hover { border-color: var(--rule); color: var(--ink); }
+  .proj-tag-clickable:hover { border-color: var(--accent); color: var(--accent-ink); }
   .proj-card-featured.img-card .proj-tag-clickable:hover {
     border-color: rgba(255,255,255,0.7);
     color: var(--white);
   }
 
   /* Cartes et listes */
-  .faq-item:hover { border-color: var(--rule); }
   .tl-card:hover,
   .pcard:hover,
   .comp-card:hover,
   .contact-item:hover,
-  .pdest-card:hover { border-color: var(--rule); }
-  .comp-card:hover .comp-cta { color: var(--accent-ink); }
-  .skill-flip-card:hover .skill-flip-face { border-color: var(--rule); }
+  .pdest-card:hover { border-color: var(--accent); }
+  .comp-card:hover .comp-cta { color: var(--accent-ink); gap: var(--gap-sm); }
+  .faq-item:hover { border-color: var(--rule); }
+
+  /*
+     Le retournement revient au survol. La règle générale du V2 était de
+     le réserver au clic, mais sur cette grille la carte ne porte aucun
+     signe qu'elle est cliquable : personne ne l'aurait retournée.
+     Le clic et le clavier restent disponibles pour le tactile.
+  */
+  .skill-flip-card:hover .skill-flip-inner { transform: rotateY(180deg); }
+  .skill-flip-card:hover .skill-flip-face { border-color: var(--accent); }
 
   /* Preuves */
   .proj-preuves:hover { border-color: var(--rule); color: var(--ink); }

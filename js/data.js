@@ -216,8 +216,11 @@ const faqItems = [
 // kind: 'formation' | 'central' (BUT) | 'future' (Master)
 const timelineItems = [
   {
-    kind: "future",
-    chip: "À venir",
+    // Commencé en septembre 2026 : carte de formation ordinaire, plus de
+    // contour en pointillés ni de mention « à venir ».
+    kind: "formation",
+    current: true,
+    chip: "Formation actuelle",
     title: "Master 1 — Management Stratégique & Changement",
     period: "Sept. 2026",
     org: "ISM-IAE Paris-Saclay / UVSQ · en partenariat avec Sup de V",
@@ -237,8 +240,8 @@ const timelineItems = [
     }
   },
   {
-    kind: "central",
-    chip: "Formation actuelle",
+    kind: "formation",
+    chip: "Formation",
     title: "BUT GEA — parcours GEMA",
     period: "2023–2026",
     org: "Université Paris Cité · IUT de Paris - Rives de Seine",
