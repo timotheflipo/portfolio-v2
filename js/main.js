@@ -152,28 +152,45 @@ function buildFAQ(container) {
 // ============================================
 const projectsRegistry = [];
 
-// --- Section 1 : Diagnostic & Analyse ---
-function buildS1HTML(theme, num, cards) {
-  const headerTagsHTML = theme.tags.map(t => `<span class="ts-tag">${t}</span>`).join('');
-  const [fc, ...sc] = cards;
+// --- Bandeau de titre, commun aux trois parties ---
+// Chaque partie s'ouvre sur la même bande sombre : c'est elle qui dit
+// « nouveau chapitre ». Le V2.1 laissait la partie 2 poser son titre dans
+// une colonne latérale, donc rien ne signalait qu'on changeait de partie.
+function themeBandHTML(theme, num) {
+  return `
+    <div class="ts-band">
+      <div class="ts-band-inner reveal">
+        <div class="ts-band-title">
+          <span class="ts-eyebrow">${num}</span>
+          <h2 class="ts-title">${theme.title}</h2>
+        </div>
+        <p class="ts-intro">${theme.intro || ''}</p>
+      </div>
+    </div>`;
+}
 
-  const featuredHTML = `
+// Carte « projet central »
+function featuredCardHTML({ card, tagsHTML, preuvesChip }, revealClass = 'reveal') {
+  return `
     <div class="proj-card-wrap">
-      <a class="proj-card-featured reveal" href="${fc.card.link}">
+      <a class="proj-card-featured ${revealClass}" href="${card.link}">
         <div class="pcf-badge">Projet central</div>
         <div class="pcf-top">
-          <h3>${fc.card.title}</h3>
+          <h3>${card.title}</h3>
           <span class="pcf-arrow">↗</span>
         </div>
-        <p>${fc.card.description}</p>
-        <div class="proj-tags">${fc.tagsHTML}</div>
-        ${fc.preuvesChip}
+        <p>${card.description}</p>
+        <div class="proj-tags">${tagsHTML}</div>
+        ${preuvesChip}
       </a>
     </div>`;
+}
 
-  const subHTML = sc.map(({ card, tagsHTML, preuvesChip }) => `
+// Carte secondaire
+function plainCardHTML({ card, tagsHTML, preuvesChip }, revealClass = 'reveal') {
+  return `
     <div class="proj-card-wrap">
-      <a class="proj-card reveal" href="${card.link}">
+      <a class="proj-card ${revealClass}" href="${card.link}">
         <div class="proj-card-top">
           <h3>${card.title}</h3>
           <span class="proj-arrow">↗</span>
@@ -182,58 +199,31 @@ function buildS1HTML(theme, num, cards) {
         <div class="proj-tags">${tagsHTML}</div>
         ${preuvesChip}
       </a>
-    </div>`).join('');
+    </div>`;
+}
 
+// --- Section 1 : un projet central, deux projets à côté ---
+function buildS1HTML(theme, num, cards) {
+  const [fc, ...sc] = cards;
   return `
-    <div class="ts1-header reveal">
-      <div class="ts1-header-left">
-        <div class="ts-eyebrow">${num}</div>
-        <h2 class="ts-title">${theme.title}</h2>
-        <p class="ts-intro">${theme.intro || ''}</p>
-      </div>
-      <div class="ts1-header-right">
-        <div class="ts-tags">${headerTagsHTML}</div>
-      </div>
-    </div>
+    ${themeBandHTML(theme, num)}
     <div class="ts1-cards-area">
-      ${featuredHTML}
-      <div class="ts1-sub-grid">${subHTML}</div>
+      ${featuredCardHTML(fc)}
+      <div class="ts1-sub-grid">${sc.map(c => plainCardHTML(c)).join('')}</div>
     </div>`;
 }
 
-// --- Section 2 : Pilotage & Décision ---
+// --- Section 2 : deux projets centraux côte à côte ---
 function buildS2HTML(theme, num, cards) {
-  const sideTagsHTML = theme.tags.map(t => `<span class="ts-tag">${t}</span>`).join('');
-
-  const cardsHTML = cards.map(({ card, tagsHTML, preuvesChip }) => `
-    <div class="proj-card-wrap">
-      <a class="proj-card-featured reveal" href="${card.link}">
-        <div class="pcf-badge">Projet central</div>
-        <div class="pcf-top">
-          <h3>${card.title}</h3>
-          <span class="pcf-arrow">↗</span>
-        </div>
-        <p>${card.description}</p>
-        <div class="proj-tags">${tagsHTML}</div>
-        ${preuvesChip}
-      </a>
-    </div>`).join('');
-
   return `
-    <div class="ts2-inner">
-      <div class="ts2-sidebar reveal-l">
-        <div class="ts-eyebrow">Compétences</div>
-        <h2 class="ts-title">${theme.title}</h2>
-        <p class="ts-intro">${theme.intro || ''}</p>
-        <div class="ts-tags">${sideTagsHTML}</div>
-      </div>
-      <div class="ts2-cards reveal-r">${cardsHTML}</div>
+    ${themeBandHTML(theme, num)}
+    <div class="ts2-grid">
+      ${cards.map(c => featuredCardHTML(c)).join('')}
     </div>`;
 }
 
-// --- Section 3 : Créateurs de valeur ---
+// --- Section 3 : un projet en pleine image, deux projets à côté ---
 function buildS3HTML(theme, num, cards) {
-  const centerTagsHTML = theme.tags.map(t => `<span class="ts-tag">${t}</span>`).join('');
   const [fc, ...sc] = cards;
 
   const imgAttr = theme.image
@@ -242,7 +232,7 @@ function buildS3HTML(theme, num, cards) {
 
   const featuredHTML = theme.image ? `
     <div class="proj-card-wrap">
-      <a class="proj-card-featured img-card reveal-l" href="${fc.card.link}">
+      <a class="proj-card-featured img-card reveal" href="${fc.card.link}">
         <div class="pcf-bg" ${imgAttr}></div>
         <div class="pcf-overlay"></div>
         <div class="pcf-img-body">
@@ -260,43 +250,13 @@ function buildS3HTML(theme, num, cards) {
           ${fc.preuvesChip}
         </div>
       </a>
-    </div>` : `
-    <div class="proj-card-wrap">
-      <a class="proj-card-featured reveal-l" href="${fc.card.link}">
-        <div class="pcf-badge">Projet central</div>
-        <div class="pcf-top">
-          <h3>${fc.card.title}</h3>
-          <span class="pcf-arrow">↗</span>
-        </div>
-        <p>${fc.card.description}</p>
-        <div class="proj-tags">${fc.tagsHTML}</div>
-        ${fc.preuvesChip}
-      </a>
-    </div>`;
-
-  const secHTML = sc.map(({ card, tagsHTML, preuvesChip }) => `
-    <div class="proj-card-wrap">
-      <a class="proj-card reveal-r" href="${card.link}">
-        <div class="proj-card-top">
-          <h3>${card.title}</h3>
-          <span class="proj-arrow">↗</span>
-        </div>
-        <p>${card.description}</p>
-        <div class="proj-tags">${tagsHTML}</div>
-        ${preuvesChip}
-      </a>
-    </div>`).join('');
+    </div>` : featuredCardHTML(fc);
 
   return `
-    <div class="ts3-header reveal">
-      <div class="ts-eyebrow">${num}</div>
-      <h2 class="ts-title">${theme.title}</h2>
-      <p class="ts-intro">${theme.intro || ''}</p>
-      <div class="ts-tags">${centerTagsHTML}</div>
-    </div>
+    ${themeBandHTML(theme, num)}
     <div class="ts3-grid">
       ${featuredHTML}
-      <div class="ts3-secondary">${secHTML}</div>
+      <div class="ts3-secondary">${sc.map(c => plainCardHTML(c)).join('')}</div>
     </div>`;
 }
 
