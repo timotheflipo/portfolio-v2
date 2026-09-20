@@ -628,8 +628,20 @@ function initSectionCurves() {
     const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
     return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
   };
-  const INK    = rgba(css.getPropertyValue('--ink')    || '#2b2723', 0.16);
-  const ACCENT = rgba(css.getPropertyValue('--accent') || '#ff6f3c', 0.30);
+  /*
+     Le canvas est rendu en pixels CSS, pas en pixels écran : sur un
+     Retina il est donc étiré d'un facteur deux, et un trait d'un pixel
+     s'étale sur deux en perdant la moitié de sa densité. C'est ce qui le
+     rendait presque invisible.
+
+     Le rendre à la densité de l'écran quadruplerait la mémoire du canvas
+     — une soixantaine de mégaoctets pour une décoration de fond. On
+     compense donc à l'encre : le trait reste doux, mais il pèse le même
+     poids à l'œil sur les deux types d'écran.
+  */
+  const soft = 0.55 + 0.45 * Math.min(window.devicePixelRatio || 1, 2);
+  const INK    = rgba(css.getPropertyValue('--ink')    || '#2b2723', 0.22 * soft);
+  const ACCENT = rgba(css.getPropertyValue('--accent') || '#ff6f3c', 0.40 * soft);
 
   const CELL   = 11;   // finesse de la grille, en px : plus petit = plus lisse
   const LEVELS = 16;   // nombre de courbes de niveau
