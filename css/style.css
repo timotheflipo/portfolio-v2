@@ -859,19 +859,71 @@ p { margin: 0; }
 */
 .theme-section { position: relative; isolation: isolate; overflow: hidden; }
 .theme-section > *:not(.fx-curves) { position: relative; z-index: 1; }
+/*
+   Le canvas déborde de 120px sur les quatre côtés : la translation ne
+   peut donc jamais découvrir son bord, et `overflow: hidden` sur la
+   section masque le débord.
+*/
 .fx-curves {
   position: absolute;
-  inset: 0;
+  top: -120px;
+  left: -120px;
+  width: calc(100% + 240px);
+  height: calc(100% + 240px);
   z-index: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
+
+  /* Le tracé apparaît en douceur une fois calculé, plutôt que d'un bloc. */
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+
   /*
-     Le seul réglage d'intensité : 0 efface les courbes, 1 les rend
-     environ 60% plus présentes qu'ici. Les alphas des traits, dans
-     initSectionCurves(), sont calibrés pour cette valeur.
+     Le mouvement. C'est une translation, donc le compositeur s'en
+     charge : aucun calcul sur le fil principal, soixante images par
+     seconde sans effort, et des clics qui restent instantanés pendant
+     que ça bouge. `will-change` promeut la couche une bonne fois.
   */
-  opacity: 0.62;
+  will-change: transform;
+  /*
+     Vitesse constante sur une trajectoire fermée, pas un aller-retour.
+     `ease-in-out` sur un `alternate` faisait stagner la dérive à chaque
+     extrémité : on n'y voyait plus aucun mouvement pendant plusieurs
+     secondes. Ici le parcours revient à son point de départ, donc rien
+     ne s'arrête jamais — environ 5px par seconde, à peine perceptible
+     mais jamais immobile.
+  */
+  animation: fxDrift 80s linear infinite;
+}
+
+/*
+   Le seul réglage d'intensité : 0 efface les courbes, 1 les rend
+   environ 60% plus présentes qu'ici. Les alphas des traits, dans
+   initSectionCurves(), sont calibrés pour cette valeur.
+*/
+.fx-curves.is-ready { opacity: 0.62; }
+
+/* Les trois sections ne dérivent pas au même moment. */
+.theme-section:nth-of-type(2) .fx-curves { animation-delay: -27s; }
+.theme-section:nth-of-type(3) .fx-curves { animation-delay: -54s; }
+
+/* Une animation qui tourne pour personne reste du travail. */
+.fx-curves.is-paused { animation-play-state: paused; }
+
+/* Huit points qui approchent une ellipse : pas d'angle visible. */
+@keyframes fxDrift {
+  0%    { transform: translate3d(-72px, -34px, 0); }
+  12.5% { transform: translate3d(-30px, -62px, 0); }
+  25%   { transform: translate3d( 34px, -58px, 0); }
+  37.5% { transform: translate3d( 72px, -18px, 0); }
+  50%   { transform: translate3d( 60px,  30px, 0); }
+  62.5% { transform: translate3d( 18px,  62px, 0); }
+  75%   { transform: translate3d(-34px,  56px, 0); }
+  87.5% { transform: translate3d(-68px,  20px, 0); }
+  100%  { transform: translate3d(-72px, -34px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-curves { animation: none; transform: none; will-change: auto; }
 }
 
 /*

@@ -594,26 +594,30 @@ function buildCompetences(container) {
 // FOND ANIMÉ — COURBES DE NIVEAU
 // ============================================
 // Des courbes de niveau, comme sur une carte topographique : des boucles
-// fermées et emboîtées, pas des vagues horizontales.
+// fermées et emboîtées. Un champ scalaire est construit à partir de
+// quinze sources, puis on en trace les lignes d'isovaleur par
+// « marching squares ».
 //
-// Le principe : un champ scalaire est construit à partir de six sources
-// qui dérivent très lentement, puis on en trace les lignes d'isovaleur
-// par « marching squares ». Comme le champ est continu, les lignes le
-// sont aussi — et comme les sources bougent, le relief se déforme
-// doucement sans jamais se répéter.
+// Le point important est ailleurs, dans la manière dont ça bouge.
 //
-// Une boucle infinie est normalement proscrite ici. Celle-ci ne l'est
-// qu'à trois conditions, toutes tenues plus bas :
-//   1. Elle ne porte aucune information et ne bouge rien à la lecture.
-//   2. Elle s'arrête dès que la section sort du cadre, et quand l'onglet
-//      passe en arrière-plan : aucune image calculée pour personne.
-//   3. Elle ne s'exécute pas du tout si le système demande moins
-//      d'animation — une image fixe est alors dessinée.
+// La première version recalculait tout le relief à chaque image. Même
+// bridée à douze images par seconde — ce qui se voyait, et saccadait —
+// elle occupait le fil principal en permanence, celui-là même qui doit
+// répondre aux clics et au défilement.
+//
+// Ici le relief n'est calculé qu'UNE fois, dans un temps mort du
+// navigateur. Le mouvement est ensuite une simple translation CSS,
+// composée par le processeur graphique : le fil principal n'en fait
+// strictement rien. D'où une fluidité à soixante images par seconde et
+// des clics qui restent instantanés, quoi qu'il arrive.
+//
+// Le canvas déborde volontairement de sa section : la translation ne
+// peut donc jamais en découvrir le bord, et `overflow: hidden` sur la
+// section masque le reste.
 function initSectionCurves() {
   const canvases = [...document.querySelectorAll('.fx-curves')];
-  if (!canvases.length || !window.requestAnimationFrame) return;
+  if (!canvases.length) return;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const css = getComputedStyle(document.documentElement);
 
   // Les traits reprennent l'accent et l'encre du site, jamais un gris
@@ -630,65 +634,45 @@ function initSectionCurves() {
   const CELL   = 11;   // finesse de la grille, en px : plus petit = plus lisse
   const LEVELS = 16;   // nombre de courbes de niveau
 
-  // Quatorze sources, petites et rapprochées. Six grosses bulles ne
+  // Quinze sources, petites et rapprochées. Six grosses bulles ne
   // donnaient que de vastes arcs ; il faut beaucoup de maxima locaux pour
-  // obtenir le grain serré d'une vraie carte. Les amplitudes alternent :
-  // les négatives creusent des cuvettes entre les reliefs.
-  // Chaque source tourne sur sa propre ellipse, à sa propre période —
-  // sans rapport simple entre elles, pour que le motif ne se répète pas.
+  // obtenir le grain serré d'une vraie carte. Les amplitudes négatives
+  // creusent des cuvettes entre les reliefs.
   const SOURCES = [
-    { x: 0.10, y: 0.18, r: 0.16, amp:  1.00, ax: 0.05, ay: 0.04, sx: 0.000071, sy: 0.000103, ph: 0.0 },
-    { x: 0.28, y: 0.09, r: 0.13, amp: -0.80, ax: 0.04, ay: 0.05, sx: 0.000094, sy: 0.000067, ph: 0.9 },
-    { x: 0.44, y: 0.22, r: 0.18, amp:  0.90, ax: 0.06, ay: 0.03, sx: 0.000059, sy: 0.000088, ph: 1.7 },
-    { x: 0.63, y: 0.11, r: 0.12, amp: -0.70, ax: 0.03, ay: 0.06, sx: 0.000112, sy: 0.000076, ph: 2.4 },
-    { x: 0.80, y: 0.26, r: 0.17, amp:  0.95, ax: 0.05, ay: 0.04, sx: 0.000083, sy: 0.000121, ph: 3.1 },
-    { x: 0.94, y: 0.08, r: 0.11, amp: -0.65, ax: 0.04, ay: 0.05, sx: 0.000098, sy: 0.000055, ph: 3.8 },
-    { x: 0.06, y: 0.48, r: 0.14, amp: -0.85, ax: 0.05, ay: 0.04, sx: 0.000064, sy: 0.000109, ph: 4.5 },
-    { x: 0.33, y: 0.55, r: 0.19, amp:  1.00, ax: 0.06, ay: 0.05, sx: 0.000105, sy: 0.000072, ph: 5.2 },
-    { x: 0.56, y: 0.44, r: 0.12, amp: -0.75, ax: 0.03, ay: 0.06, sx: 0.000077, sy: 0.000094, ph: 5.9 },
-    { x: 0.74, y: 0.58, r: 0.16, amp:  0.85, ax: 0.05, ay: 0.03, sx: 0.000118, sy: 0.000061, ph: 0.4 },
-    { x: 0.92, y: 0.47, r: 0.13, amp: -0.70, ax: 0.04, ay: 0.05, sx: 0.000068, sy: 0.000115, ph: 1.2 },
-    { x: 0.17, y: 0.82, r: 0.18, amp:  0.90, ax: 0.06, ay: 0.04, sx: 0.000089, sy: 0.000079, ph: 2.0 },
-    { x: 0.48, y: 0.88, r: 0.14, amp: -0.80, ax: 0.04, ay: 0.05, sx: 0.000101, sy: 0.000058, ph: 2.7 },
-    { x: 0.70, y: 0.92, r: 0.15, amp:  0.95, ax: 0.05, ay: 0.04, sx: 0.000073, sy: 0.000098, ph: 3.5 },
-    { x: 0.88, y: 0.79, r: 0.12, amp: -0.72, ax: 0.03, ay: 0.06, sx: 0.000110, sy: 0.000084, ph: 4.2 }
+    { x: 0.10, y: 0.18, r: 0.16, amp:  1.00 },
+    { x: 0.28, y: 0.09, r: 0.13, amp: -0.80 },
+    { x: 0.44, y: 0.22, r: 0.18, amp:  0.90 },
+    { x: 0.63, y: 0.11, r: 0.12, amp: -0.70 },
+    { x: 0.80, y: 0.26, r: 0.17, amp:  0.95 },
+    { x: 0.94, y: 0.08, r: 0.11, amp: -0.65 },
+    { x: 0.06, y: 0.48, r: 0.14, amp: -0.85 },
+    { x: 0.33, y: 0.55, r: 0.19, amp:  1.00 },
+    { x: 0.56, y: 0.44, r: 0.12, amp: -0.75 },
+    { x: 0.74, y: 0.58, r: 0.16, amp:  0.85 },
+    { x: 0.92, y: 0.47, r: 0.13, amp: -0.70 },
+    { x: 0.17, y: 0.82, r: 0.18, amp:  0.90 },
+    { x: 0.48, y: 0.88, r: 0.14, amp: -0.80 },
+    { x: 0.70, y: 0.92, r: 0.15, amp:  0.95 },
+    { x: 0.88, y: 0.79, r: 0.12, amp: -0.72 }
   ];
 
-  const items = canvases.map(cv => ({
-    cv, ctx: cv.getContext('2d'), w: 0, h: 0, cols: 0, rows: 0, grid: null, visible: false
-  }));
-
-  function resize(it) {
-    const r = it.cv.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    it.w = r.width; it.h = r.height;
-    it.cv.width  = Math.round(r.width  * dpr);
-    it.cv.height = Math.round(r.height * dpr);
-    it.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    it.ctx.lineJoin = 'round';
-    it.ctx.lineCap  = 'round';
-    it.cols = Math.ceil(r.width  / CELL);
-    it.rows = Math.ceil(r.height / CELL);
-    it.grid = new Float32Array((it.cols + 1) * (it.rows + 1));
+  // Champ scalaire : somme de retombées en 1/(1+d²), sans racine carrée.
+  // Il est rempli bande par bande : c'est la seule partie vraiment
+  // coûteuse, et d'un bloc elle dépassait les 50ms sur machine lente.
+  function sources(w, h) {
+    const ref = Math.min(w, h) || 1;
+    // Positions et rayons résolus une fois, pas par point de grille.
+    return SOURCES.map(s => {
+      const rr = s.r * ref;
+      return { px: s.x * w, py: s.y * h, inv: 1 / (rr * rr), amp: s.amp };
+    });
   }
 
-  // Champ scalaire : somme de retombées en 1/(1+d²), sans racine carrée.
-  function field(it, t) {
-    const { grid, cols, rows, w, h } = it;
-    const ref = Math.min(w, h) || 1;
-    // Positions et rayons résolus une fois par image, pas par point.
-    const pts = SOURCES.map(s => {
-      const rr = s.r * ref;
-      return {
-        px: (s.x + s.ax * Math.sin(t * s.sx + s.ph)) * w,
-        py: (s.y + s.ay * Math.cos(t * s.sy + s.ph)) * h,
-        inv: 1 / (rr * rr),
-        amp: s.amp
-      };
-    });
-    let k = 0, min = Infinity, max = -Infinity;
-    for (let j = 0; j <= rows; j++) {
+  function fillBand(st, j0, j1) {
+    const { grid, cols, pts } = st;
+    for (let j = j0; j < j1; j++) {
       const y = j * CELL;
+      let k = j * (cols + 1);
       for (let i = 0; i <= cols; i++) {
         const x = i * CELL;
         let v = 0;
@@ -698,23 +682,21 @@ function initSectionCurves() {
           v += p.amp / (1 + (dx * dx + dy * dy) * p.inv);
         }
         grid[k++] = v;
-        if (v < min) min = v;
-        if (v > max) max = v;
+        if (v < st.min) st.min = v;
+        if (v > st.max) st.max = v;
       }
     }
-    return { min, max };
   }
 
-  // Marching squares : pour chaque cellule, on regarde lesquels de ses
+  // Marching squares : pour chaque cellule on regarde lesquels de ses
   // quatre coins dépassent le seuil, et on relie les points interpolés
   // sur les arêtes concernées. L'interpolation linéaire suffit à rendre
   // le trait lisse dès lors que le champ l'est.
-  function contour(it, level) {
-    const { ctx, grid, cols, rows } = it;
+  function contour(ctx, grid, cols, level, j0, j1) {
     const idx = (i, j) => j * (cols + 1) + i;
-    for (let j = 0; j < rows; j++) {
+    for (let j = j0; j < j1; j++) {
       for (let i = 0; i < cols; i++) {
-        const a = grid[idx(i, j)],     b = grid[idx(i + 1, j)];
+        const a = grid[idx(i, j)],         b = grid[idx(i + 1, j)];
         const c = grid[idx(i + 1, j + 1)], d = grid[idx(i, j + 1)];
         let m = 0;
         if (a > level) m |= 8;
@@ -745,67 +727,131 @@ function initSectionCurves() {
     }
   }
 
-  function draw(it, t) {
-    const { ctx, w, h } = it;
-    if (!w || !h) return;
-    ctx.clearRect(0, 0, w, h);
+  // Allocation seule : dimensionner le canvas et réserver la grille.
+  function alloc(cv) {
+    const r = cv.getBoundingClientRect();
+    const w = Math.round(r.width), h = Math.round(r.height);
+    if (!w || !h) return null;
+    // Un pixel par pixel CSS, même sur écran à haute densité : ce sont
+    // des traits très pâles sur un fond clair, le gain de finesse ne se
+    // verrait pas et coûterait quatre fois plus de mémoire.
+    cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d');
+    ctx.lineJoin = 'round';
+    ctx.lineCap  = 'round';
     ctx.lineWidth = 1;
-    const { min, max } = field(it, t);
-    const span = max - min;
-    if (span < 1e-6) return;
-    for (let n = 1; n <= LEVELS; n++) {
-      ctx.beginPath();
-      contour(it, min + span * (n / (LEVELS + 1)));
-      ctx.strokeStyle = n % 4 === 0 ? ACCENT : INK;
-      ctx.stroke();
-    }
+    const cols = Math.ceil(w / CELL), rows = Math.ceil(h / CELL);
+    return {
+      ctx, cols, rows,
+      grid: new Float32Array((cols + 1) * (rows + 1)),
+      pts: sources(w, h),
+      min: Infinity, max: -Infinity, span: 0
+    };
   }
 
-  // Une seule boucle pour les trois sections. Le relief bouge trop
-  // lentement pour qu'un rafraîchissement à 60 images/s se voie : on
-  // redessine cinq fois moins souvent, et le processeur s'en porte mieux.
-  const FRAME_MS = 1000 / 12;
-  let raf = null, last = 0;
-  const tick = now => {
-    let any = false;
-    if (now - last >= FRAME_MS) {
-      last = now;
-      for (const it of items) {
-        if (!it.visible) continue;
-        any = true;
-        draw(it, now);
-      }
-    } else {
-      any = items.some(it => it.visible);
+  // Un niveau est tracé en plusieurs passes de lignes. Le résultat est
+  // identique à un tracé d'un seul tenant — ce sont des segments
+  // indépendants — mais aucune passe ne monopolise le fil principal.
+  function drawLevel(st, n, j0, j1) {
+    st.ctx.beginPath();
+    contour(st.ctx, st.grid, st.cols, st.min + st.span * (n / (LEVELS + 1)), j0, j1);
+    st.ctx.strokeStyle = n % 4 === 0 ? ACCENT : INK;
+    st.ctx.stroke();
+  }
+
+  /*
+     Le tracé est découpé en petites tâches — la grille, puis les niveaux
+     deux par deux — et le navigateur en exécute autant qu'il peut dans
+     chacun de ses temps morts, sans jamais dépasser le budget qu'il
+     annonce.
+
+     Une première version tracait chaque canvas d'un bloc dans un
+     `requestIdleCallback` : sur un processeur bridé quatre fois, deux de
+     ces blocs dépassaient les 50ms et devenaient des « tâches longues »,
+     c'est-à-dire des instants où un clic aurait attendu. Découpé ainsi,
+     il n'y en a plus aucune.
+  */
+  const steps = [];
+  const BANDS = 8;         // découpe du calcul du champ
+  const LEVEL_CHUNKS = 3;  // découpe du tracé de chaque niveau
+  function enqueue(cv) {
+    let st = null;
+    steps.push(() => { st = alloc(cv); });
+    for (let n = 0; n < BANDS; n++) {
+      const band = n;
+      steps.push(() => {
+        if (!st) return;
+        // La grille compte rows+1 lignes de points ; la dernière bande
+        // va jusqu'au bout pour qu'aucune ligne ne reste à zéro.
+        const lines = st.rows + 1;
+        const from = Math.floor(lines * band / BANDS);
+        const to   = band === BANDS - 1 ? lines : Math.floor(lines * (band + 1) / BANDS);
+        fillBand(st, from, to);
+      });
     }
-    raf = any && !document.hidden ? requestAnimationFrame(tick) : null;
-  };
-  const start = () => { if (!raf && !document.hidden) raf = requestAnimationFrame(tick); };
+    steps.push(() => { if (st) st.span = st.max - st.min; });
+    // Un tiers de niveau par étape. Un niveau entier restait la plus
+    // grosse étape de la file — une douzaine de millisecondes, soit
+    // soixante-dix sur une machine six fois plus lente, donc au-dessus
+    // de la barre des cinquante.
+    for (let n = 1; n <= LEVELS; n++) {
+      for (let c = 0; c < LEVEL_CHUNKS; c++) {
+        const level = n, chunk = c;
+        steps.push(() => {
+          if (!st || st.span < 1e-6) return;
+          const from = Math.floor(st.rows * chunk / LEVEL_CHUNKS);
+          const to   = chunk === LEVEL_CHUNKS - 1 ? st.rows
+                     : Math.floor(st.rows * (chunk + 1) / LEVEL_CHUNKS);
+          drawLevel(st, level, from, to);
+        });
+      }
+    }
+    steps.push(() => { if (st) cv.classList.add('is-ready'); });
+  }
 
+  const idle = window.requestIdleCallback ||
+    (fn => setTimeout(() => fn({ timeRemaining: () => 8 }), 1));
+
+  let draining = false;
+  function drain(deadline) {
+    /*
+       On enchaîne les étapes tant qu'il reste confortablement de quoi en
+       finir une. La marge de 10ms couvre le dépassement possible : le
+       budget est vérifié AVANT l'étape, jamais pendant, donc une étape
+       trop grosse déborderait quoi qu'on fasse. C'est pour cette raison
+       que la file est découpée aussi finement — pas pour la beauté du
+       geste, mais pour que ce dépassement reste toujours négligeable.
+    */
+    while (steps.length && deadline.timeRemaining() > 10) steps.shift()();
+    if (steps.length) idle(drain);
+    else draining = false;
+  }
+  function schedule() {
+    if (draining || !steps.length) return;
+    draining = true;
+    idle(drain);
+  }
+
+  canvases.forEach(enqueue);
+  schedule();
+
+  // La translation est une animation CSS, donc composée hors du fil
+  // principal. Reste à l'interrompre quand la section n'est pas à
+  // l'écran : une animation qui tourne pour personne reste du travail.
   const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      const it = items.find(i => i.cv === e.target);
-      if (it) it.visible = e.isIntersecting;
-    });
-    if (!reduceMotion.matches) start();
-  }, { rootMargin: '120px 0px' });
-
-  items.forEach(it => { resize(it); draw(it, 0); io.observe(it.cv); });
-
-  // Repli sans animation : une seule image, déjà dessinée ci-dessus.
-  if (reduceMotion.matches) return;
-
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
+    entries.forEach(e => e.target.classList.toggle('is-paused', !e.isIntersecting));
+  }, { rootMargin: '150px 0px' });
+  canvases.forEach(cv => io.observe(cv));
 
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      items.forEach(it => { resize(it); draw(it, performance.now()); });
-    }, 150);
+      steps.length = 0;
+      canvases.forEach(cv => { cv.classList.remove('is-ready'); enqueue(cv); });
+      schedule();
+    }, 200);
   }, { passive: true });
-
-  start();
 }
 
 // ============================================
