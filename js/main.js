@@ -591,11 +591,19 @@ function buildCompetences(container) {
 }
 
 // ============================================
-// FOND ANIMÉ — COURBES DES SECTIONS PROJETS
+// FOND ANIMÉ — COURBES DE NIVEAU
 // ============================================
-// Quelques ondes très pâles qui dérivent lentement derrière les cartes.
-// Une animation en boucle est normalement proscrite ici : celle-ci ne
-// l'est qu'à trois conditions, toutes tenues plus bas.
+// Des courbes de niveau, comme sur une carte topographique : des boucles
+// fermées et emboîtées, pas des vagues horizontales.
+//
+// Le principe : un champ scalaire est construit à partir de six sources
+// qui dérivent très lentement, puis on en trace les lignes d'isovaleur
+// par « marching squares ». Comme le champ est continu, les lignes le
+// sont aussi — et comme les sources bougent, le relief se déforme
+// doucement sans jamais se répéter.
+//
+// Une boucle infinie est normalement proscrite ici. Celle-ci ne l'est
+// qu'à trois conditions, toutes tenues plus bas :
 //   1. Elle ne porte aucune information et ne bouge rien à la lecture.
 //   2. Elle s'arrête dès que la section sort du cadre, et quand l'onglet
 //      passe en arrière-plan : aucune image calculée pour personne.
@@ -608,28 +616,47 @@ function initSectionCurves() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const css = getComputedStyle(document.documentElement);
 
-  // Les traits reprennent l'accent du site plutôt qu'un gris arbitraire.
-  const rgb = (hex, a) => {
+  // Les traits reprennent l'accent et l'encre du site, jamais un gris
+  // arbitraire. Une ligne sur quatre passe à l'orange, comme les courbes
+  // maîtresses d'une vraie carte.
+  const rgba = (hex, a) => {
     const h = hex.trim().replace('#', '');
     const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
     return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
   };
-  const accent = css.getPropertyValue('--accent') || '#ff6f3c';
-  const ink    = css.getPropertyValue('--ink')    || '#2b2723';
+  const INK    = rgba(css.getPropertyValue('--ink')    || '#2b2723', 0.16);
+  const ACCENT = rgba(css.getPropertyValue('--accent') || '#ff6f3c', 0.30);
 
-  // Six ondes : amplitude, longueur d'onde, vitesse et hauteur de repos.
-  // Les vitesses sont volontairement premières entre elles pour que le
-  // motif ne se répète pas à l'œil.
-  const WAVES = [
-    { y: 0.20, amp: 0.055, len: 1.5, speed: 0.011, color: rgb(ink,    0.16) },
-    { y: 0.34, amp: 0.075, len: 1.1, speed: 0.017, color: rgb(accent, 0.26) },
-    { y: 0.48, amp: 0.050, len: 1.9, speed: 0.008, color: rgb(ink,    0.14) },
-    { y: 0.62, amp: 0.085, len: 1.3, speed: 0.014, color: rgb(accent, 0.21) },
-    { y: 0.76, amp: 0.060, len: 0.9, speed: 0.020, color: rgb(ink,    0.16) },
-    { y: 0.88, amp: 0.045, len: 1.7, speed: 0.010, color: rgb(accent, 0.18) }
+  const CELL   = 11;   // finesse de la grille, en px : plus petit = plus lisse
+  const LEVELS = 16;   // nombre de courbes de niveau
+
+  // Quatorze sources, petites et rapprochées. Six grosses bulles ne
+  // donnaient que de vastes arcs ; il faut beaucoup de maxima locaux pour
+  // obtenir le grain serré d'une vraie carte. Les amplitudes alternent :
+  // les négatives creusent des cuvettes entre les reliefs.
+  // Chaque source tourne sur sa propre ellipse, à sa propre période —
+  // sans rapport simple entre elles, pour que le motif ne se répète pas.
+  const SOURCES = [
+    { x: 0.10, y: 0.18, r: 0.16, amp:  1.00, ax: 0.05, ay: 0.04, sx: 0.000071, sy: 0.000103, ph: 0.0 },
+    { x: 0.28, y: 0.09, r: 0.13, amp: -0.80, ax: 0.04, ay: 0.05, sx: 0.000094, sy: 0.000067, ph: 0.9 },
+    { x: 0.44, y: 0.22, r: 0.18, amp:  0.90, ax: 0.06, ay: 0.03, sx: 0.000059, sy: 0.000088, ph: 1.7 },
+    { x: 0.63, y: 0.11, r: 0.12, amp: -0.70, ax: 0.03, ay: 0.06, sx: 0.000112, sy: 0.000076, ph: 2.4 },
+    { x: 0.80, y: 0.26, r: 0.17, amp:  0.95, ax: 0.05, ay: 0.04, sx: 0.000083, sy: 0.000121, ph: 3.1 },
+    { x: 0.94, y: 0.08, r: 0.11, amp: -0.65, ax: 0.04, ay: 0.05, sx: 0.000098, sy: 0.000055, ph: 3.8 },
+    { x: 0.06, y: 0.48, r: 0.14, amp: -0.85, ax: 0.05, ay: 0.04, sx: 0.000064, sy: 0.000109, ph: 4.5 },
+    { x: 0.33, y: 0.55, r: 0.19, amp:  1.00, ax: 0.06, ay: 0.05, sx: 0.000105, sy: 0.000072, ph: 5.2 },
+    { x: 0.56, y: 0.44, r: 0.12, amp: -0.75, ax: 0.03, ay: 0.06, sx: 0.000077, sy: 0.000094, ph: 5.9 },
+    { x: 0.74, y: 0.58, r: 0.16, amp:  0.85, ax: 0.05, ay: 0.03, sx: 0.000118, sy: 0.000061, ph: 0.4 },
+    { x: 0.92, y: 0.47, r: 0.13, amp: -0.70, ax: 0.04, ay: 0.05, sx: 0.000068, sy: 0.000115, ph: 1.2 },
+    { x: 0.17, y: 0.82, r: 0.18, amp:  0.90, ax: 0.06, ay: 0.04, sx: 0.000089, sy: 0.000079, ph: 2.0 },
+    { x: 0.48, y: 0.88, r: 0.14, amp: -0.80, ax: 0.04, ay: 0.05, sx: 0.000101, sy: 0.000058, ph: 2.7 },
+    { x: 0.70, y: 0.92, r: 0.15, amp:  0.95, ax: 0.05, ay: 0.04, sx: 0.000073, sy: 0.000098, ph: 3.5 },
+    { x: 0.88, y: 0.79, r: 0.12, amp: -0.72, ax: 0.03, ay: 0.06, sx: 0.000110, sy: 0.000084, ph: 4.2 }
   ];
 
-  const items = canvases.map(cv => ({ cv, ctx: cv.getContext('2d'), w: 0, h: 0, visible: false }));
+  const items = canvases.map(cv => ({
+    cv, ctx: cv.getContext('2d'), w: 0, h: 0, cols: 0, rows: 0, grid: null, visible: false
+  }));
 
   function resize(it) {
     const r = it.cv.getBoundingClientRect();
@@ -638,40 +665,118 @@ function initSectionCurves() {
     it.cv.width  = Math.round(r.width  * dpr);
     it.cv.height = Math.round(r.height * dpr);
     it.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    it.ctx.lineJoin = 'round';
+    it.ctx.lineCap  = 'round';
+    it.cols = Math.ceil(r.width  / CELL);
+    it.rows = Math.ceil(r.height / CELL);
+    it.grid = new Float32Array((it.cols + 1) * (it.rows + 1));
+  }
+
+  // Champ scalaire : somme de retombées en 1/(1+d²), sans racine carrée.
+  function field(it, t) {
+    const { grid, cols, rows, w, h } = it;
+    const ref = Math.min(w, h) || 1;
+    // Positions et rayons résolus une fois par image, pas par point.
+    const pts = SOURCES.map(s => {
+      const rr = s.r * ref;
+      return {
+        px: (s.x + s.ax * Math.sin(t * s.sx + s.ph)) * w,
+        py: (s.y + s.ay * Math.cos(t * s.sy + s.ph)) * h,
+        inv: 1 / (rr * rr),
+        amp: s.amp
+      };
+    });
+    let k = 0, min = Infinity, max = -Infinity;
+    for (let j = 0; j <= rows; j++) {
+      const y = j * CELL;
+      for (let i = 0; i <= cols; i++) {
+        const x = i * CELL;
+        let v = 0;
+        for (let n = 0; n < pts.length; n++) {
+          const p = pts[n];
+          const dx = x - p.px, dy = y - p.py;
+          v += p.amp / (1 + (dx * dx + dy * dy) * p.inv);
+        }
+        grid[k++] = v;
+        if (v < min) min = v;
+        if (v > max) max = v;
+      }
+    }
+    return { min, max };
+  }
+
+  // Marching squares : pour chaque cellule, on regarde lesquels de ses
+  // quatre coins dépassent le seuil, et on relie les points interpolés
+  // sur les arêtes concernées. L'interpolation linéaire suffit à rendre
+  // le trait lisse dès lors que le champ l'est.
+  function contour(it, level) {
+    const { ctx, grid, cols, rows } = it;
+    const idx = (i, j) => j * (cols + 1) + i;
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const a = grid[idx(i, j)],     b = grid[idx(i + 1, j)];
+        const c = grid[idx(i + 1, j + 1)], d = grid[idx(i, j + 1)];
+        let m = 0;
+        if (a > level) m |= 8;
+        if (b > level) m |= 4;
+        if (c > level) m |= 2;
+        if (d > level) m |= 1;
+        if (m === 0 || m === 15) continue;
+
+        const x = i * CELL, y = j * CELL;
+        const T = () => [x + CELL * (level - a) / (b - a), y];
+        const R = () => [x + CELL, y + CELL * (level - b) / (c - b)];
+        const B = () => [x + CELL * (level - d) / (c - d), y + CELL];
+        const L = () => [x, y + CELL * (level - a) / (d - a)];
+        const seg = (p, q) => { ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); };
+
+        switch (m) {
+          case 1: case 14: seg(L(), B()); break;
+          case 2: case 13: seg(B(), R()); break;
+          case 3: case 12: seg(L(), R()); break;
+          case 4: case 11: seg(T(), R()); break;
+          case 6: case 9:  seg(T(), B()); break;
+          case 7: case 8:  seg(L(), T()); break;
+          // Cas ambigus : deux courbes traversent la même cellule.
+          case 5:  seg(L(), T()); seg(B(), R()); break;
+          case 10: seg(L(), B()); seg(T(), R()); break;
+        }
+      }
+    }
   }
 
   function draw(it, t) {
     const { ctx, w, h } = it;
     if (!w || !h) return;
     ctx.clearRect(0, 0, w, h);
-    ctx.lineWidth = 1.5;
-    for (const wv of WAVES) {
-      const base = h * wv.y;
-      const k = (Math.PI * 2) / (w * wv.len);
+    ctx.lineWidth = 1;
+    const { min, max } = field(it, t);
+    const span = max - min;
+    if (span < 1e-6) return;
+    for (let n = 1; n <= LEVELS; n++) {
       ctx.beginPath();
-      // Un point tous les 12px : au-delà la courbe reste lisse à l'œil
-      // et le coût de tracé chute d'autant.
-      for (let x = 0; x <= w + 12; x += 12) {
-        const phase = t * wv.speed;
-        const y = base
-          + Math.sin(x * k + phase) * h * wv.amp
-          + Math.sin(x * k * 2.3 - phase * 0.6) * h * wv.amp * 0.35;
-        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = wv.color;
+      contour(it, min + span * (n / (LEVELS + 1)));
+      ctx.strokeStyle = n % 4 === 0 ? ACCENT : INK;
       ctx.stroke();
     }
   }
 
-  // Une seule boucle pour les trois sections, et seulement si l'une
-  // d'elles est à l'écran.
-  let raf = null;
+  // Une seule boucle pour les trois sections. Le relief bouge trop
+  // lentement pour qu'un rafraîchissement à 60 images/s se voie : on
+  // redessine cinq fois moins souvent, et le processeur s'en porte mieux.
+  const FRAME_MS = 1000 / 12;
+  let raf = null, last = 0;
   const tick = now => {
     let any = false;
-    for (const it of items) {
-      if (!it.visible) continue;
-      any = true;
-      draw(it, now * 0.06);
+    if (now - last >= FRAME_MS) {
+      last = now;
+      for (const it of items) {
+        if (!it.visible) continue;
+        any = true;
+        draw(it, now);
+      }
+    } else {
+      any = items.some(it => it.visible);
     }
     raf = any && !document.hidden ? requestAnimationFrame(tick) : null;
   };
@@ -687,16 +792,16 @@ function initSectionCurves() {
 
   items.forEach(it => { resize(it); draw(it, 0); io.observe(it.cv); });
 
-  // Repli sans animation : une seule image, dessinée une fois.
+  // Repli sans animation : une seule image, déjà dessinée ci-dessus.
   if (reduceMotion.matches) return;
 
-  document.addEventListener('visibilitychange', () => { document.hidden ? null : start(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
 
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      items.forEach(it => { resize(it); draw(it, performance.now() * 0.06); });
+      items.forEach(it => { resize(it); draw(it, performance.now()); });
     }, 150);
   }, { passive: true });
 
