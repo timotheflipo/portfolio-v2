@@ -763,7 +763,7 @@ p { margin: 0; }
    ============================================ */
 .notion-section {
   background-color: var(--paper);
-  padding: var(--section-gap) 0;
+  padding: var(--section-gap) 0 0;
   border-top: 1px solid var(--rule-soft);
 }
 .notion-header {
@@ -776,15 +776,15 @@ p { margin: 0; }
 .sw { display: inline; transition: color var(--dur-hover) ease; }
 
 /*
-   La figure sort de la colonne : 100vw, recentrée. `overflow-x: clip`
-   sur body empêche la barre de défilement horizontale que 100vw
-   provoquerait sur les systèmes qui l'affichent en permanence.
+   La figure sort de la colonne de texte et reste sur le papier. Le fond
+   sombre qui l'entourait est descendu sur les quatre blocs ci-dessous,
+   où il sert à quelque chose : fermer la partie « méthode » avant que
+   la page passe aux projets.
 */
 .notion-figure {
   width: 100%;
-  margin: 0 0 var(--gap-lg);
-  background-color: var(--night);
-  padding: var(--gap-md) var(--gap-md) var(--gap);
+  margin: 0 0 var(--section-gap);
+  padding: 0 var(--gap-md);
 }
 .notion-mockup-img {
   width: 100%;
@@ -796,20 +796,25 @@ p { margin: 0; }
   border-radius: var(--radius);
 }
 .notion-figure figcaption {
-  max-width: 1320px;
+  max-width: 1100px;
   margin: var(--gap-sm) auto 0;
   font-size: var(--text-body-sm);
-  color: rgba(255,255,255,0.5);
+  color: var(--ash);
 }
 
 /*
-   Trois blocs numérotés en ligne. Le V1 les empilait dans une colonne
-   collée au bord de l'image.
+   Quatre blocs numérotés sur fond sombre. La bande prend la même valeur
+   que la bande « fil du portfolio » et que le pied de page : trois
+   respirations sombres, une seule couleur. C'est elle qui ferme la
+   partie « méthode » avant que la page passe aux projets.
 */
+.notion-blocks-band {
+  background-color: var(--night);
+  padding: var(--section-gap) var(--gap-md);
+}
 .notion-blocks {
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 0 var(--gap-md);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--gap-md);
@@ -819,20 +824,22 @@ p { margin: 0; }
   font-family: var(--font-display);
   font-size: var(--text-body-sm);
   font-weight: 600;
-  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  /* L'orange vif sur le sombre : 5,9:1, il porte sans forcer. */
+  color: var(--accent);
   padding-bottom: var(--gap-xs);
-  border-bottom: 2px solid var(--rule-soft);
+  border-bottom: 2px solid var(--night-rule);
   margin-bottom: var(--gap-xs);
 }
 .notion-block-text h4 {
   font-family: var(--font-body);
   font-size: var(--text-body);
   font-weight: 700;
-  color: var(--ink);
+  color: var(--white);
   letter-spacing: 0;
   margin-bottom: var(--gap-xs);
 }
-.notion-block-text p { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.7; }
+.notion-block-text p { font-size: var(--text-body-sm); color: var(--night-text); line-height: 1.7; }
 
 /* ============================================
    SECTIONS THÉMATIQUES — DESIGN ÉDITORIAL
