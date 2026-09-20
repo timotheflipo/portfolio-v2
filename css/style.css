@@ -559,6 +559,62 @@ p { margin: 0; }
 /* ============================================
    ACCUEIL — HERO
    ============================================ */
+/*
+   Le fond photographique. Il ne porte aucun texte : il est posé sous
+   le contenu, très désaturé et très transparent, pour donner de la
+   matière à une page qui n'en avait aucune. `isolation: isolate` crée
+   un contexte d'empilement propre, sinon le z-index du fond entrerait
+   en concurrence avec l'en-tête fixe.
+*/
+.hero { position: relative; isolation: isolate; overflow: hidden; }
+.hero > *:not(.hero-photo) { position: relative; z-index: 1; }
+
+.hero-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("../images/fond-hero.jpg") center / cover no-repeat;
+  opacity: 0.15;
+  /* Désaturée puis re-réchauffée : la photo prend la température du papier
+     au lieu de poser une seconde palette sur la page. */
+  filter: grayscale(1) contrast(1.06) sepia(.45) saturate(1.35) hue-rotate(-12deg);
+  /*
+     Fondu vers le bas : sans lui, la photo se coupe net sur la bande
+     sombre qui suit, et la rupture se lit comme un bug d'affichage.
+  */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+}
+
+/*
+   Voile sous le texte. Selon la zone de la photo qui tombe derrière
+   l'accroche, le micro-label en orange pouvait descendre à 3,75:1 —
+   sous le seuil pour du petit texte en gras. Ce dégradé de papier
+   éclaircit juste le centre et garantit la lisibilité quelle que soit
+   l'image posée dans le dossier.
+
+   `::after` est le dernier enfant de `.hero` : à z-index égal il se
+   peint après `.hero-photo`, donc au-dessus, et sous le contenu qui
+   est en z-index 1.
+*/
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 58% 42% at 50% 44%,
+    var(--paper) 0%,
+    rgba(242, 241, 236, 0.72) 45%,
+    rgba(242, 241, 236, 0) 78%);
+}
+
+/* Quand le système demande plus de contraste, la texture s'efface. */
+@media (prefers-contrast: more) {
+  .hero-photo, .hero::after { display: none; }
+}
+
 .hero {
   background-color: var(--paper);
   padding: calc(var(--header-h) + var(--gap-lg)) var(--gap-md) var(--gap-lg);
