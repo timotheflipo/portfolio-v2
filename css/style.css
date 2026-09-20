@@ -777,19 +777,13 @@ p { margin: 0; }
   padding: 0 var(--gap-md);
 }
 
-/* Titre à gauche, chapeau aligné sur sa dernière ligne à droite —
-   la même composition que les bandeaux de partie. */
+/* Titre et chapeau centrés, sur toute la largeur, comme dans le V1. */
 .notion-header {
-  display: grid;
-  grid-template-columns: 1.25fr 1fr;
-  gap: var(--gap-lg);
-  align-items: end;
-  margin-bottom: var(--gap-lg);
+  text-align: center;
+  margin-bottom: var(--section-gap);
 }
-/* Un cran sous les titres de partie : ici le titre partage la ligne
-   avec son chapeau, à 46px il partait sur quatre lignes. */
-.notion-header h2 { font-size: var(--text-heading-lg); margin-bottom: 0; }
-.notion-header .lede { padding-bottom: 0.35em; }
+.notion-header h2 { margin-bottom: var(--gap-sm); }
+.notion-header .lede { margin: 0 auto; }
 /* Mot à mot au défilement : la couleur est pilotée par initScrollWords(). */
 .sw { display: inline; transition: color var(--dur-hover) ease; }
 
@@ -849,9 +843,9 @@ p { margin: 0; }
 .notion-block-text p { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.65; }
 
 @media (max-width: 860px) {
-  .notion-header,
   .notion-body { grid-template-columns: 1fr; gap: var(--gap-md); align-items: start; }
-  .notion-header .lede { padding-bottom: 0; }
+  .notion-header { text-align: left; margin-bottom: var(--gap-lg); }
+  .notion-header .lede { margin: 0; }
 }
 
 /* ============================================
