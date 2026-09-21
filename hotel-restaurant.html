@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;display=swap" rel="stylesheet">
-  <link rel="icon" href="favicon.svg?v=217" type="image/svg+xml">
+  <link rel="icon" href="favicon.svg?v=218" type="image/svg+xml">
   <link rel="canonical" href="https://timotheflipo.github.io/portfolio-v2/hotel-restaurant.html">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_FR">
@@ -24,7 +24,7 @@
   <!-- Sans JavaScript, les blocs animés à l'apparition doivent rester lisibles :
        la classe est posée avant le premier rendu, et c'est elle qui autorise le masquage. -->
   <script>document.documentElement.classList.add('js');</script>
-  <link rel="stylesheet" href="css/style.css?v=217">
+  <link rel="stylesheet" href="css/style.css?v=218">
   <style>
     /* Composants propres à cette page.
        Tout ce qui est commun aux huit pages projet vit dans css/style.css. */
@@ -60,10 +60,10 @@
     }
     
     .diag-card-top {
-      display: flex; align-items: center; gap: var(--gap-sm); margin-bottom: 8px;
+      display: flex; align-items: center; gap: var(--gap-sm); margin-bottom: var(--gap-sm);
     }
     .diag-area {
-      font-size: var(--text-body-sm); font-weight: 800; color: var(--ink);
+      font-size: var(--text-body-sm); font-weight: 700; color: var(--ink);
       text-transform: uppercase; letter-spacing: 0.06em;
     }
     .diag-status {
@@ -89,7 +89,7 @@
       width: 40px; height: 40px; border-radius: 50%;
       background-color: var(--white); border: 2px solid var(--rule);
       color: var(--stone); display: flex; align-items: center; justify-content: center;
-      font-size: var(--text-body-sm); font-weight: 800; flex-shrink: 0; position: relative; z-index: 1;
+      font-size: var(--text-body-sm); font-weight: 700; flex-shrink: 0; position: relative; z-index: 1;
     }
     .phase-item:last-child .phase-circle {
       background-color: var(--ink); color: var(--white);
@@ -102,15 +102,15 @@
     .phase-body {
       background-color: var(--white); border-radius: var(--radius);
       padding: 1.2rem 1.4rem; border: 1px solid var(--rule-soft);
-      flex: 1; margin-bottom: 1rem;
+      flex: 1; margin-bottom: var(--gap);
       transition: box-shadow .var(--dur-panel) var(--ease-out);
     }
     
     .phase-label {
       font-size: var(--text-caption); font-weight: 700; color: var(--ink);
-      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px;
+      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: var(--gap-xs);
     }
-    .phase-body h4 { font-size: var(--text-body); font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .phase-body h4 { font-size: var(--text-body); font-weight: 700; color: var(--ink); margin-bottom: var(--gap-xs); }
     .phase-body p { font-size: var(--text-body); color: var(--stone); line-height: 1.65; }
 
     /* ---- Bilan : acquis / à approfondir ---- */
@@ -120,7 +120,7 @@
     .bilan-col { }
     .bilan-col-title {
       font-size: var(--text-body-sm); font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.1em; margin-bottom: 0.75rem;
+      letter-spacing: 0.1em; margin-bottom: var(--gap-sm);
     }
     .bilan-col-title.acquired { color: var(--ink); }
     .bilan-col-title.progress { color: var(--ink); }
@@ -129,11 +129,11 @@
       display: flex; gap: var(--gap-sm); align-items: flex-start;
       padding: 0.9rem 1rem; border-radius: var(--radius);
       border: 1px solid var(--rule-soft);
-      background-color: var(--white); margin-bottom: 0.6rem;
+      background-color: var(--white); margin-bottom: var(--gap-sm);
       font-size: var(--text-body); color: var(--stone); line-height: 1.6;
     }
     .bilan-item:last-child { margin-bottom: 0; }
-    .bilan-item strong { color: var(--ink); font-weight: 700; display: block; margin-bottom: 2px; font-size: var(--text-body); }
+    .bilan-item strong { color: var(--ink); font-weight: 700; display: block; margin-bottom: var(--gap-xs); font-size: var(--text-body); }
 
     .bilan-item.progress-item {
       border-color: var(--rule-soft);
@@ -360,7 +360,7 @@
     </div>
   </footer>
 
-  <script src="js/data.js?v=217"></script>
-  <script src="js/main.js?v=217"></script>
+  <script src="js/data.js?v=218"></script>
+  <script src="js/main.js?v=218"></script>
 </body>
 </html>
