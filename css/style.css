@@ -588,7 +588,7 @@ p { margin: 0; }
   background: url("../images/fond-hero.jpg") center / cover no-repeat;
   /* Assez pour qu'on reconnaisse la scène, pas assez pour qu'elle
      s'impose — c'est une image de synthèse, elle doit rester un fond. */
-  opacity: 0.20;
+  opacity: 0.28;
   /* Désaturée puis re-réchauffée : la photo prend la température du papier
      au lieu de poser une seconde palette sur la page. */
   filter: grayscale(1) contrast(1.06) sepia(.45) saturate(1.35) hue-rotate(-12deg);
@@ -796,13 +796,20 @@ p { margin: 0; }
   padding: 0 var(--gap-md);
 }
 
-/* Titre et chapeau centrés, sur toute la largeur, comme dans le V1. */
+/*
+   Titre et chapeau à gauche, comme les bandeaux des trois parties et
+   comme l'en-tête des pages internes. Centré, il était le seul de son
+   espèce dans la page.
+*/
 .notion-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: var(--section-gap);
 }
 .notion-header h2 { margin-bottom: var(--gap-sm); }
-.notion-header .lede { margin: 0 auto; }
+/* Calé à gauche, le chapeau irait sinon chercher les 1160px du
+   conteneur : au-delà de la largeur de lecture, l'œil perd le début
+   de la ligne suivante. */
+.notion-header .lede { margin: 0; max-width: var(--prose-max); }
 /* Mot à mot au défilement : la couleur est pilotée par initScrollWords(). */
 .sw { display: inline; transition: color var(--dur-hover) ease; }
 
@@ -863,8 +870,7 @@ p { margin: 0; }
 
 @media (max-width: 860px) {
   .notion-body { grid-template-columns: 1fr; gap: var(--gap-md); align-items: start; }
-  .notion-header { text-align: left; margin-bottom: var(--gap-lg); }
-  .notion-header .lede { margin: 0; }
+  .notion-header { margin-bottom: var(--gap-lg); }
 }
 
 /* ============================================
@@ -1505,10 +1511,10 @@ p { margin: 0; }
    PAGE HERO (pages internes)
    ============================================ */
 /*
-   En-tête des pages internes. Il était centré, seul de son espèce : tout
-   le reste du site aligne ses titres à gauche. Il reprend maintenant la
-   composition des bandeaux de partie — titre à gauche, chapeau aligné
-   sur sa dernière ligne à droite — sans toucher au balisage.
+   En-tête des pages internes. Le chapeau occupait une seconde colonne à
+   droite du titre : sur « Parcours », six lignes de texte tiraient l'œil
+   loin du titre avant même qu'il soit lu. Titre puis chapeau, l'un sous
+   l'autre et sur le même bord gauche que le reste de la page.
 */
 .page-hero {
   background-color: var(--paper);
@@ -1517,15 +1523,9 @@ p { margin: 0; }
   padding: calc(var(--header-h) + var(--section-gap)) var(--gap-md) var(--gap-lg);
   /* Même bord gauche que le contenu de toutes les autres pages. */
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  column-gap: var(--gap-lg);
+  grid-template-columns: 1fr;
   row-gap: var(--gap);
-  /*
-     Alignement sur la première ligne, pas sur le bas. Les chapeaux vont
-     de deux à six lignes selon la page : aligner les bas faisait glisser
-     « Parcours » au milieu du bloc, très loin de son ancre de lecture.
-  */
-  align-items: baseline;
+  justify-items: start;
 }
 .page-hero h1 {
   grid-column: 1;
@@ -1539,8 +1539,11 @@ p { margin: 0; }
   animation: fadeUp var(--dur-reveal) var(--ease-out) 44ms forwards;
 }
 .page-hero p {
-  grid-column: 2;
-  grid-row: 1;
+  grid-column: 1;
+  grid-row: 2;
+  /* Largeur de lecture : le conteneur fait 1160px, une ligne de chapeau
+     ne doit pas les prendre. */
+  max-width: var(--prose-max);
   color: var(--stone);
   font-size: var(--text-prose);
   line-height: 1.7;
@@ -1603,11 +1606,6 @@ p { margin: 0; }
   width: 100%;
   height: auto;
   display: block;
-}
-
-@media (max-width: 860px) {
-  .page-hero { grid-template-columns: 1fr; gap: var(--gap); align-items: start; }
-  .page-hero p { grid-column: 1; grid-row: auto; padding-bottom: 0; }
 }
 
 @media (max-width: 760px) {
