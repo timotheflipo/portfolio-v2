@@ -586,9 +586,14 @@ p { margin: 0; }
   z-index: 0;
   pointer-events: none;
   background: url("../images/fond-hero.jpg") center / cover no-repeat;
-  /* Assez pour qu'on reconnaisse la scène, pas assez pour qu'elle
-     s'impose — c'est une image de synthèse, elle doit rester un fond. */
-  opacity: 0.28;
+  /*
+     Plafond mesuré, pas choisi : le micro-label orange fait 12px en 700,
+     il lui faut 4,5:1. Au point le plus sombre de la photo sous ses
+     lettres, le voile compris, on tient 4,52:1 à 0,32 — et on tombe à
+     4,42:1 dès 0,36. C'est donc la valeur la plus haute possible sans
+     repasser sous le seuil.
+  */
+  opacity: 0.32;
   /* Désaturée puis re-réchauffée : la photo prend la température du papier
      au lieu de poser une seconde palette sur la page. */
   filter: grayscale(1) contrast(1.06) sepia(.45) saturate(1.35) hue-rotate(-12deg);
@@ -1383,15 +1388,23 @@ p { margin: 0; }
 /* ============================================
    SECTION 6 — FAQ
    ============================================ */
+/*
+   Les cartes sont bornées à 760px : dans un conteneur de 1160px elles se
+   calaient à gauche et laissaient 340px de vide sur toute la hauteur de
+   la section. Elles se centrent — le texte, lui, reste aligné à gauche
+   à l'intérieur de chaque carte.
+*/
 .faq-list {
   max-width: var(--page-max);
   margin: 0 auto;
   padding: var(--section-gap) var(--gap-md) calc(var(--section-gap) * 1.2);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--gap-sm);
 }
 .faq-item {
+  width: 100%;
   max-width: 760px;
   background-color: var(--white);
   border-radius: var(--radius);
@@ -1630,8 +1643,15 @@ p { margin: 0; }
   margin: 0 auto;
   padding: 0 var(--gap-md);
 }
-/* La frise garde sa largeur de lecture, mais calée à gauche. */
-.tl { max-width: 780px; }
+/*
+   La frise est bornée à 780px pour rester lisible. Calée à gauche dans
+   un conteneur de 1160px, elle laissait 320px de vide sur toute sa
+   hauteur, face au titre. Elle se centre, légende comprise — les deux
+   partagent la même colonne, donc la légende reste bien sur le bord
+   gauche de la frise. Le titre de la page et son chapeau, eux, gardent
+   le bord gauche commun à toutes les pages.
+*/
+.tl, .timeline-legend { max-width: 780px; margin-left: auto; margin-right: auto; }
 .timeline-legend {
   display: flex;
   justify-content: flex-start;
